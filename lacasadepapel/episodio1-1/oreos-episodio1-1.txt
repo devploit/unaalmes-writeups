@@ -1,0 +1,62 @@
+NICK: oreos
+
+SOLUCION: EPISODIO 1 - 1ª PARTE
+
+1. Accedemos a la URL de la caja fuerte: http://34.253.233.243/lacasadepapel/episodio1.
+
+2. Revisamos el código fuente, y encotramos un javascript interesante, 'login.js'.
+
+/*
+
+function conexion(){
+    var Password = "unescape%28String.fromCharCode%252880%252C%2520108%252C%252097%252C%2520110%2529%29:KZQWYZLOMNUWC===";
+    for (i = 0; i < Password.length; i++)
+    {
+        if (Password[i].indexOf(code1) == 0)
+        {
+            var TheSplit = Password[i].split(":");
+            var code1 = TheSplit[0];
+            var code2 = TheSplit[1];
+    }
+}
+
+*/
+
+3. Observamos que se realiza un split a la cadena "Password" con el delimitador ':' para obtener code1 y code2.
+
+code1 = unescape%28String.fromCharCode%252880%252C%2520108%252C%252097%252C%2520110%2529%29 = unescape(String.fromCharCode(80, 108, 97, 110)) = Plan
+code2 = DecodeBase32(KZQWYZLOMNUWC===) = Valencia
+
+4. Insertamos los códigos en la página de la caja fuerte: http://34.253.233.243/lacasadepapel/episodio1.
+
+El codigo para descomprimir el zip es:
+PR0F3S0R&R10
+
+5. Descomprimimos el zip usando el password obtenido.
+
+$ 7z e episodio1.zip
+
+6. Ejecutamos con wine:
+
+$ WINEPREFIX=~/.wine64 wine episodio1.exe
+System_Date: 05/15/18
+Wrong date R3m0!
+
+-------------HINT---------------------
+'La persistencia de la memoria...'
+--------------------------------------
+Pulse cualquier tecla para continuar...
+
+7. Usamos radare2 para realizar un análisis estático, y observamos que se realiza una comparación de la fecha actual con el 23 de enero de 1989 (cadena 01/23/89) en MD5 (observar adjuntos condition.png, win.png y lose.png). Cambiamos la fecha y obtenemos el flag:
+
+$ sudo date -s '01/23/89'; WINEPREFIX=~/.wine64 wine episodio1.exe 
+lun ene 23 00:00:00 CET 1989
+
+Congratulation!!, Stealing Money $$$...
+----------------------------
+Stolen: 1.000.000.000 $ 
+----------------------------
+Flag: e30f35ad8d9cb6efc0778539a669fa85
+...........................................
+
+8. Obtenemos la Flag: e30f35ad8d9cb6efc0778539a669fa85
