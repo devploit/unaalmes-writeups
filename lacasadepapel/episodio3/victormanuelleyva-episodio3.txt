@@ -1,0 +1,158 @@
+UAM _La_Casa_de_Papel_Final_Season.
+
+
+En primer lugar descargamos y analizamos con blink el firmware
+
+luego encontramos la carpeta con la bomba
+analizamos la bomba hasta darnos cuenta de que hay que desempacarla
+
+
+upx -d .bomb
+
+y vemos que la pass es italy 
+
+nos devuelve 
+
+_dbf7c981d7e_fe8_c462eab3c39_f2b06_fd
+
+
+
+quitamos los guiones y al ser 32 caracteres sospecho de que es un md5, probamos en md5online e voila
+
+http://95.216.138.194/
+
+
+
+nos pide un certificado, me pongo a autofirmar uno pero no funciona
+
+lanzo un nmap para ver puertos, veo ssh, 443, 80 y creo que ftp también, pruebo fuerza bruta con hydra al ssh tirando de rockyou... nada, tiro de todas las posibilidades que se me ocurren con curl, wget, intentando descargar algo que me de una señal.
+
+Pruebo curl con ssl 
+
+root@kali:~# curl -k https://95.216.138.194/
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>301 Moved Permanently</title>
+</head><body>
+<h1>Moved Permanently</h1>
+<p>The document has moved <a href="http://95.216.138.194">here</a>.</p>
+<hr>
+<address>Apache/2.4.25 (Debian) Server at 95.216.138.194 Port 443</address>
+</body></html>
+root@kali:~# 
+
+intento bajar algo con wget y me dice que no tengo permiso, que mis certificados le dan la risa, investigo por internet como pasar de eso y obtengo las cabeceras:
+
+oot@kali:~# wget --no-check-certificate -S https://95.216.138.194/ -O - > /dev/null 
+--2018-07-19 00:17:12--  https://95.216.138.194/
+Conectando con 95.216.138.194:443... conectado.
+AVISO: El certificado de “95.216.138.194” no es confiable.
+AVISO: El certificado de “95.216.138.194” no tiene un emisor conocido.
+El propietario del certificado no se ajusta al nombre de equipo “95.216.138.194”
+Petición HTTP enviada, esperando respuesta... 
+  HTTP/1.1 301 Moved Permanently
+  Date: Wed, 18 Jul 2018 22:17:12 GMT
+  Server: Apache/2.4.25 (Debian)
+  Strict-Transport-Security: max-age=63072000; includeSubdomains
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Location: http://95.216.138.194
+  Content-Length: 310
+  Keep-Alive: timeout=5, max=100
+  Connection: Keep-Alive
+  Content-Type: text/html; charset=iso-8859-1
+Localización: http://95.216.138.194 [siguiendo]
+--2018-07-19 00:17:12--  http://95.216.138.194/
+Conectando con 95.216.138.194:80... conectado.
+Petición HTTP enviada, esperando respuesta... 
+  HTTP/1.1 400 Bad Request
+  Date: Wed, 18 Jul 2018 22:17:13 GMT
+  Server: Apache/2.4.25 (Debian)
+  Strict-Transport-Security: max-age=63072000; includeSubdomains
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Content-Length: 437
+  Connection: close
+  Content-Type: text/html; charset=iso-8859-1
+2018-07-19 00:17:13 ERROR 400: Bad Request.
+
+Mientras pienso y pruebo me doy cuenta que con el navegador, si voy al 443 cambia el error y pasa de indicar que el server esta en home a que está en lacasadepapel.cloud, lo mismo que ponia en los certificados.
+0 s:/C=ES/ST=Some-State/O=La Casa de Papel SL/OU=Films and Fun!/CN=lacasadepapel.cloud/emailAddress=info@lacasadepapel.cloud
+
+
+
+Usando Burp, con el proxy rescato las cabeceras GET
+
+GET / HTTP/1.1
+Host: 95.216.138.194:443
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Connection: close
+Upgrade-Insecure-Requests: 1
+
+Entonces copio para curl y obtengo mismos resultados, bad request, así que pruebo a enviar un POST con repeater de BURP, para ver que obtengo y sorpresa! 
+
+HTTP/1.1 200 OK
+Date: Wed, 18 Jul 2018 22:47:35 GMT
+Server: Apache/2.4.25 (Debian)
+Strict-Transport-Security: max-age=63072000; includeSubdomains
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Last-Modified: Wed, 11 Jul 2018 15:25:56 GMT
+ETag: "131-570badcf46493-gzip"
+Accept-Ranges: bytes
+Vary: Accept-Encoding
+Content-Length: 305
+Connection: close
+Content-Type: text/html
+
+<html>
+<head>
+	<title>La casa de papel</title>
+</head>
+<body bgcolor="black">
+<!-- <audio src="audio/Bella_Ciao.mp3"></audio> -->
+<center>
+	<audio controls>
+		<source src="audio/Bella_Cia0.wav" type="audio/mp4">
+	</audio>
+</center>
+<br />
+<center>
+	<img src="images/back.jpg" />
+</center>
+</body>
+</html>
+
+
+Así que... wget recursivo para obtener los archivos (ahí cometí un error, no vi dos archivos de audio, mi mente solo vió dos y por eso estuve dando mil vueltas con el morse posteriormente)
+
+wget --no-check-certificate  --header="Host: 95.216.138.194:443" https://95.216.138.194 (al final caí en tener que hacerlo a la url https://95.216.138.194/audio/ para poder bajar el mp3.
+
+Una vez solventado el hecho de que me faltaba el mp3 y dada la cantidad de cabezazos que me había dado con el wav, en base a las hints que dieron los admins por el canal, tiro de audacity, detecté el morse e intenté hacerlo a las brabas, evidentemente sin el mp3 era inviable, pero toda vez que lo obtuve y remendé mi error, tiré de audacity nuevamente e investigué como borrar una "parte" de una canción.
+
+Tiré del proceso manual para eliminar voces (invertir una pista) y se quedó mas nítido el morse, corté la sección de la canción, generé el spectograma, jugué con la ganancia, límites de frecuencia y db para obtener algo lo más nítido posible que cuadrara un poco con el morse que mi viejo oído de scout xDDD intuía, con eso y con cyberchef obtuve la flag:
+
+LAFLAGESBELLACIAOREMOENMD5
+
+
+Brutal, divertido y he aprendido un huevo sobre certificados, nmap, metasploit al intentar reventar el ssh, de audacity...
+
+Gracias pero algún día me tomaré mi venganza.
+
+Un saludo.
+
+Victor.
+eternaln00b
+
+
+
+
+
+
+
+
+
+
