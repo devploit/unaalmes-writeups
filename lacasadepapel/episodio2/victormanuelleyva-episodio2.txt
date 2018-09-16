@@ -1,0 +1,17 @@
+UAM EPISODIO 2
+
+Arrancamos desde la URL http://34.247.69.86/lacasadepapel/episodio2/index.html, donde nos encontramos un "chat" donde presuntamente podemos escribir lo que queramos y s enos dice que tengamos cuidado porque todo será leído por ellos.
+En primer lugar me miré todo el código fuente y los scripts de la web, estuve dandole un par de vueltas al script game-frame.js, en la intención de que de algo valía. Tras ver que no valía para nada, estudio el otro y entonces caí en que el tema está en que "lee todo lo que ponemos"
+
+Comienzo escribiendo todo tipo de caracteres y al no recibir respuesta empiezo a probar hasta que me doy cuenta de que si envío texto entre llaves <texto>, no muestra nada y ahí se me encendió la luz pero el ánsia me llevó a pulsar las hints y confirmar lo que ya sabía pero no confiaba en lo que creía.
+
+Comienzo a buscar el payload, tiro de https://www.owasp.org/index.php/XSS_Filter_Evasion_Cheat_Sheet hasta que detecto que <IMG SRC=# onmouseover="alert('xxs')"> me da el password "OsLoHaPerDidOaSuPrImo" para el zip, no sin antes darme de bruces varias veces hasta darme cuenta de que la I no era una L... cosas de la tipografía y mi cerebro.
+
+Una vez que descomprimimos el zip nos enconramos el archivo episodio2.wav con un sonido irrelevante por lo que enseguida voy a generador de espectrograma de sonido 
+
+
+http://convert.ing-now.com/mp3-audio-waveform-graphic-generator/download/spectrogram/7e108ff8b20b1c6cb61c9350fd1c149f/?v=1529099356219/
+
+Donde se nos muestran las cordenadas 40.441186 -3.687506, que nos llevan La Casa de Papel, pero, tras probar n veces el hash resultante de La Casa de Papel, de Csic, incluso pensé en pasar matrículas que se ven en las fotos de google maps, se nos reveló una sutil pista, un paso atrás... así que, hash de las cordenadas y listo!
+
+Muy entretenido, gracias admins!
