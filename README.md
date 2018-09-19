@@ -1,7 +1,7 @@
 # unaalmes-writeups
 Write-ups for UAM challenges.
 
-![UAM img|400x400,40%](https://i.imgur.com/StNpGr9.jpg | width=400, height=400)
+<img src="https://i.imgur.com/StNpGr9.jpg" width="200" height="200">
 
 https://unaalmes.hispasec.com
 
