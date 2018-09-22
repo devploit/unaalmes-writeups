@@ -1,0 +1,87 @@
+WRITE-UP SILICON VALLEY – CTF UAM
+ARSENICS
+
+EPISODIO-1
+
+Información del caso:
+
+Alguien ha denunciado a "El Flautista" por hacer actividades empresariales en una vivienda personal. Necesitamos encontrar a la persona en cuestión para convencerlo de que retire la denuncia o se nos caerá el pelo. El problema es que ha habido un apagón en la incubadora de Erlich y todos los discos duros han muerto menos el de Gilfoyle. En ellos estaban las credenciales de acceso (encriptadas) a la plataforma de la empresa y la única pista del denunciante. Debes conseguir las credenciales de alguno de los archivos de Gilfoyle para entrar y poder encontrar la dirección de la persona que ha montado todo este lío. 
+
+Se nos proporciona el disco duro de Gilfoyle y la siguiente plataforma:
+http://34.247.69.86/siliconvalley/episodio1/login.php 
+
+Descargamos el disco duro de Gilfoyle y nos ya solo por el título nos damos cuenta que es un caso de forensics pues se titula Gilfoyle-hellDD.raw. Sabemos que las copias de disco suelen ser dd que es uno de los programas de dicha materia forense. De modo que el investigador (yo) incialmente abre el access data FTK imager y al ser un .raw el disco está dañado y toda la información aparece en el unallocated space.
+
+
+
+Dado que trabajar sí complica las cosas se toma la decisión de probar con autopsy.
+
+En este caso observamos que es un solo sector de 512 bytes y nos detecta 11 imagenes, 11 audios, 11 databases y 18128 deleted files, mezclados donde hay dll, sqlite, txt, de todo.... Un mundo para perderse buscando el archivo con las credenciales que hay como objetivo (Primer shock xD). Entre los deleted files el investigador se percata de que se haya malware dentro del disco. Por precaución decide continuar con Volatility para tratar el caso.
+
+En volatility en primer lugar se analiza el tipo de imagen en el que vemos que es un profile de windows y que la imagen data del 15/09/2018.
+
+
+Con la información del profile extramos los datos de la hivelist y se procede al volcado la información del SAM y el SYSTEM ha ver si nos es útil para la web que nos proporcionan sin éxito, por lo que hay que continuar buscando.
+
+
+Se prosigue mirando los servicios que estuvieron corriendo hasta el momento del incidente y llama la atención un Soffice.
+
+
+De modo que nos centramos en la actividad de usuario con el comando userassist:
+
+
+Viendo que el usuario utiliza openoffice es posible que haya algun archivo de est tipo con las credenciales que necesitamos.
+
+
+Dado que la extensión más habitual de openoffice es “.odt” seleccionamos Search /Find “.odt” y nos encuentra el documento info.odt en el escritorio del disco de los users unaalmes.  
+
+
+
+Que fichero más suculento!! procedemos a su volcado para ver el contenido.
+volatility -f GILFOYLE-HELLDD.raw --profile=Win7SP1x64 dumpfiles -Q 0x000000007fcabd50 -D ./ -u -n 
+
+Se crea un archivo en la carpeta que estamos trabajando en la cmd llamado  file.None.0xfffffa8001acdf10.info.odt.dat eliminando la extensión.dat y abriendolo en openoffice se abren 4 páginas codificadas en base64. Se procede a su descoficación (2º Shock 4 páginas de texto hablando sobre el malware que detectamos en autopsy al principio. Se trata de Stuxnet.vmem). 
+
+The output shows eleven services printed in three unique timeframes. The most recent
+timeframe (1307075207) translates to 2011-06-03 04:26:47 UTC. At this time, the MRxCls and
+MRxNet services were either created or modified. It should be immediately suspicious that
+neither of these services is visible in the output of svcscan. This is a strong indicator that
+the two services are hidden (or they were started inappropriately); otherwise, the SCM
+would know about them:
+$ python vol.py -f stuxnet.vmem --profile=WinXPSP3x86 svcscan
+| egrep -i '(mrxnet|mrxcls)'
+Volatility Foundation Volatility Framework 2.4
+$
+One way to verify whether the services are actually running, despite the fact that
+there are no _SERVICE_RECORD structures, involves first determining the associated kernel
+module. The path is stored in the ImagePath value of the corresponding registry key. As
+you can see in the following output, the module is mrxnet.sys:
+$ python vol.py -f stuxnet.vmem --profile=WinXPSP3x86 printkey
+-K 'ControlSet001\Services\MRxNet'
+Volatility Foundation Volatility Framework 2.4
+Legend: (S) = Stable (V) = Volatile
+----------------------------
+Registry: \Device\HarddiskVolume1\WINDOWS\system32\config\system
+Key name: MRxNet (S)
+Last updated: 2011-06-03 04:26:47 UTC+0000
+Subkeys:
+	(I)	Enum
+eEl texto se repite varias veces y probamos sin éxito varias combinaciones en la web proporcionada de pier piper.
+Posibles users:mrxnet.sys MRXNET MRxNet MRxCls
+Posibles pass: 1307075207 0x3000 _SERVICE_RECORD 0x81c2a530 mrxnet.sys 0xb21d8000 y combinaciones de éstas.
+Se procede un paso atrás y se revisa de nuevo el documento cifrado. Nos percatamos de dos pequeños trocitos a mitad de archivo entre claudators. Tiene pinta de hash. Se prueba con md5 que es el más común y bingo!
+
+
+448333920e12dc9fd9c5e8c30e6b1ea2  > Gilfoyle
+b3f894165d6166da47d52ffbf77b5d87 > Satan
+Al ingresarlos en la web proporcionada nos aparece lo siguiente:
+http://34.247.69.86/siliconvalley/episodio1/login.php
+
+Nos dirigimos al enlace:
+No aparece el número de la dirección del enunciante como se explica en el enunciado del CTF a simple vista, sin embargo debe estar en la imagen según la información proporcionada. En consecuencia se sospecha de técnica de Esteganografría.
+Prácticamos una autopsia a la imagen confirmando que existe texto oculto en ella.
+
+Location 37.436712, -122.137837  > Pinta a coordenadas geográficas de latitud y logitud. De modo que vamos a google maps a situarlas.
+
+Él número de la casa es 2126, que transformado al formato UAM{md5} queda:
+UAM{3b92d18aa7a6176dd37d372bc2f1eb71} 
