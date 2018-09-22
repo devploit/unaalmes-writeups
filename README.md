@@ -28,7 +28,7 @@ You can contact to UAM administrators by Telegram or email.
 | 5 | percu | | [episodio1-1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio1-1/percu-episodio1-1.pdf),  [episodio2](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio2/percu-episodio2.pdf) | |
 | 5 | socialkas | | [episodio1-1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio1-1/socialkas-episodio1-1.pdf) | [episodio1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/siliconvalley/episodio1/tonicastillo-episodio1.pdf) |
 | 6 | alejandroparras | | [episodio1-1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio1-1/alejandroparras-episodio1-1.pdf) | |
-| 6 | arsenics | | | [episodio1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/siliconvalley/episodio1/arsenics-episodio1.txt) |
+| 6 | arsenics | | | [episodio1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/siliconvalley/episodio1/arsenics-episodio1.pdf) |
 | 6 | asterixco | | | [episodio1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/siliconvalley/episodio1/ramonsola-episodio1.pdf) | 
 | 6 | blueudp | | [episodio3](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio3/blueudp-episodio3.py) | |
 | 6 | lluisadel | | | [episodio1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/siliconvalley/episodio1/lluisadel-episodio1.pdf) |
