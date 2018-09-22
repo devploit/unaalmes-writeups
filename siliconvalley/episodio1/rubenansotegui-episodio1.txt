@@ -1,0 +1,78 @@
+WriteUp: SILICON VALLEY - EPISODIO 1
+
+Se descarga el fichero del enlace: http://www.mediafire.com/file/31pj2a5umpfm345/GILFOYLE-HELLDD.zip y se descomprime.
+
+Se identifica la imagen con la herramienta volatility (ya por el tamaño 2G apunta a un volcado de memoría):
+vol.py imageinfo -f GILFOYLE-HELLDD.raw
+
+INFO    : volatility.debug    : Determining profile based on KDBG search...
+WARNING : volatility.debug    : Cannot find a 32-bit equivalent profile. The WoW64 plugins (dlllist, ldrmodules, etc) may not work.
+WARNING : volatility.debug    : Cannot find a 32-bit equivalent profile. The WoW64 plugins (dlllist, ldrmodules, etc) may not work.
+WARNING : volatility.debug    : Cannot find a 32-bit equivalent profile. The WoW64 plugins (dlllist, ldrmodules, etc) may not work.
+          Suggested Profile(s) : Win7SP1x64, Win7SP0x64, Win2008R2SP0x64, Win2008R2SP1x64_23418, Win2008R2SP1x64, Win7SP1x64_23418
+                     AS Layer1 : WindowsAMD64PagedMemory (Kernel AS)
+                     AS Layer2 : FileAddressSpace (GILFOYLE-HELLDD.raw)
+                      PAE type : No PAE
+                           DTB : 0x187000L
+                          KDBG : 0xf800029f00a0L
+          Number of Processors : 1
+     Image Type (Service Pack) : 1
+                KPCR for CPU 0 : 0xfffff800029f1d00L
+             KUSER_SHARED_DATA : 0xfffff78000000000L
+           Image date and time : 2018-09-15 09:56:27 UTC+0000
+     Image local date and time : 2018-09-15 11:56:27 +0200
+
+Realizamos un escaneo de todos los ficheros presentes en el volcado de memoria.
+vol.py -f GILFOYLE-HELLDD.raw --profile=Win7SP1x64 filescan > filelist.txt
+
+En este momento, se da varias vueltas revisando todos los ficheros interesantes. Para ello abrimos el fichero resultante con Notepad++ y quedándonos sólo con la ruta, lo ordenamos alfabéticamente y prestamos atención a las carpetas más características entre ellas \Device\HarddiskVolume2\Users\unaalmes\.
+Como buscamos unas credenciales de una página web probamos sin éxito en las contraseñas guardadas de los navegadores.
+ - Firefox: aunque se encuentra el fichero key4.db (que contiene la clave maestra de cifrado) en la ruta \Device\HarddiskVolume2\Users\unaalmes\AppData\Roaming\Mozilla\Firefox\Profiles\diwevb8u.default-1517848615580, no se encuentra el fichero con los logins cifrados logins.json.
+ - Internet Explorer: tras varias vueltas a claves del registro mediante las funciones hivelist, hivedump y printkey de volatility sin éxito, se acaba descartando esta vía.
+
+Finalmente se repasan los ficheros otra vez y se encuentra el fichero info.odt en la carpeta de descargas del usuario:
+0x000000007fcabd50	1	1	RW-r--	\Device\HarddiskVolume2\Users\unaalmes\Desktop\info.odt
+
+Se obtiene mediante volatility:
+vol.py -f GILFOYLE-HELLDD.raw --profile=Win7SP1x64 dumpfiles -n -S summary.txt -D .\imagefiles\ -Q 0x000000007fcabd50
+Volatility Foundation Volatility Framework 2.6
+DataSectionObject 0x7fcabd50   None   \Device\HarddiskVolume2\Users\unaalmes\Desktop\info.odt
+
+Se abre el fichero y su contenido se copia a Notepad++ para facilitar su manipulación.
+Tras revisarlo varias veces se empieza a observar que hay patrones repetidos por lo que inicialmente se piensa que se trata de un cifrado por substitución pero de varios caracteres (1 a N) en vez de 1 a 1.
+Al ver que se tratan de largas cadenas de texto repetidas en vez de pequeños grupos de caracteres se enfrentan estos bloques en lineas diferentes y se aprecia una diferencia en una línea intermedia que es más larga porque contiene un texto diferente a su mitad aproximadamente.
+
+En donde el resto de líneas contiene el texto: "GVtCktleSBuYW1lOiBNUnhO" la larga tiene "[448333920e12dc9fd9c5e8c30e6b1ea2]:[b3f894165d6166da47d52ffbf77b5d87]"
+
+Aparentemente las cadenas serían hash de 32 bits, concretamente serían en MD5, pero se confirma a través de https://www.onlinehashcrack.com/hash-identification.php.
+
+Se encuentra el match en texto claro de esos hash con la herramienta online https://crackstation.net/
+
+Hash	Type	Result
+448333920e12dc9fd9c5e8c30e6b1ea2	md5	Gilfoyle
+b3f894165d6166da47d52ffbf77b5d87	md5	Satan
+
+Usuario: Gilfoyle (que se trata del afortunado que no vio destruirse su disco duro)
+Contraseña: Satan (que pega bastante bien con el personaje)
+
+Accedemos a la web indicada en el enunciado http://34.247.69.86/siliconvalley/episodio1/login.php e introducimos las credenciales descubiertas.
+
+Devuelve el siguiente texto con un enlace "Denuncia recibida: https://drive.google.com/open?id=10iguWjRmx3mB0Y4g9iRrJOIXZ1HIJ_zC"
+Se descarga tratándose de una imagen JFIF/JPEG con una diligencia previa a un procedimiento judicial y que curiosamente han tapado los datos confidenciales (está vez si lo han hecho bien no como con la sentencia de "La manada").
+Siendo JFIF un formato de imagen que no permite capas ni transparencias se asume que de la parte gráfica en sí no se podrá extraer más información por que se intenta buscar en los metadatos.
+Directamente en un primer intento se abre la imagen con la herramienta HxD y en las primeras lineas conformada en formato XML ya aparece una etiqueta interesante: "<Iptc4xmpCore:Location>37.436712, -122.137837</Iptc4xmpCore:Location>"
+
+Se introducen las coordenadas geográficas en Google Maps y nos señala una casa en la calle Webster St. en Palo Alto y que a primera vista su dueño no debería tener ninguna envidia de Richard y sus compañeros porque se gasta una muy buena casa y piscina.
+Bajando a Street View conseguimos ver el letrero del número de la casa: 2126.
+
+(Aquí como malentendido con el enuncionado seguimos buscando el número de teléfono de la casa y no el de la propia vivienda...)
+En varias paginas inmobiliarias se confirma que un servidor no podra permitirse esa casa ni con el salario de varias vidas... pero también en www.whitepages.com se observa que el dueño de la casa es William Nisley Neidig y en esa misma página se encuentra el número de teléfono del propietario (650) 328-2126.
+
+Siguiendo el formato a entregar como flag descrito en el enunciado (en md5 - se utiliza https://passwordsgenerator.net/md5-hash-generator/), se prueba las siguientes flags todas sin éxito.
+1-650-328-2126 => UAM{2b895dfd62750a9b841e1cda0cf3d690}
+(650) 328-2126 => UAM{34e955fa369d1c4417e8c7200a9ab2a4}
+16503282126 => UAM{49c38af0aa2dbc8107511f205ea38bff}
+6503282126 => UAM{da1ec48a01b7e2af0a5855bdd25b174f}
+
+Se relee el enunciado, se golpea uno contra la pared y se introduce como flag el número de la vivienda en hash md5.
+2126 => UAM{3b92d18aa7a6176dd37d372bc2f1eb71}
