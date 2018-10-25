@@ -31,5 +31,5 @@ You can contact to UAM administrators by Telegram or email.
 | 7 | alejandroparras | | [episodio1-1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio1-1/alejandroparras-episodio1-1.pdf) | |
 | 7 | [asterixco](https://twitter.com/asterixco) | | | [episodio1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/siliconvalley/episodio1/ramonsola-episodio1.pdf) | 
 | 7 | [blueudp](https://twitter.com/blueudp) | | [episodio3](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio3/blueudp-episodio3.py) | |
-| 6 | rubenansotegui | | | [episodio1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/siliconvalley/episodio1/rubenansotegui-episodio1.txt) |
-| 6 | selanton | | [episodio1-1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio1-1/selankon-episodio1-1.txt) | |
+| 7 | rubenansotegui | | | [episodio1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/siliconvalley/episodio1/rubenansotegui-episodio1.txt) |
+| 7 | selanton | | [episodio1-1](https://github.com/sysdevploit/unaalmes-writeups/blob/master/lacasadepapel/episodio1-1/selankon-episodio1-1.txt) | |
