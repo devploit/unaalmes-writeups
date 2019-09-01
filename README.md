@@ -16,10 +16,10 @@ You can contact to UAM administrators by Telegram or email.
 ## universomarvel
 | Episode | Writeups |
 |---|---|
-| **episodio1:** |[masi](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/masi) <br>[bicacaro](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/bicacaro) <br>[rafamartos](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/rafamartos) <br>[j0n3](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/j0n3) <br>[arsenics](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/arsenics) <br>[nachinho3](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/nachinho3) <br>[darkeagle](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/darkeagle) <br>[julianjm](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/julianjm) <br>[oreos](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/oreos) <br>[1v4n](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/1v4n) <br>[victormanuelleyva](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/victormanuelleyva) <br>|
-| **episodio1-2:** |[masi](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/masi) <br>[bicacaro](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/bicacaro) <br>[j0n3](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/j0n3) <br>[nachinho3](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/nachinho3) <br>[darkeagle](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/darkeagle) <br>[julianjm](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/julianjm) <br>[socialkas](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/socialkas) <br>[oreos](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/oreos) <br>|
+| **episodio1:** |[masi](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/masi) <br>[bicacaro](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/bicacaro) <br>[rafamartos](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/rafamartos) <br>[j0n3](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/j0n3) <br>[arsenics](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/arsenics) <br>[nachinho3](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/nachinho3) <br>[DarkEagle](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/DarkEagle) <br>[julianjm](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/julianjm) <br>[oreos](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/oreos) <br>[1v4n](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/1v4n) <br>[victormanuelleyva](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1/victormanuelleyva) <br>|
+| **episodio1-2:** |[masi](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/masi) <br>[bicacaro](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/bicacaro) <br>[j0n3](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/j0n3) <br>[nachinho3](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/nachinho3) <br>[DarkEagle](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/DarkEagle) <br>[julianjm](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/julianjm) <br>[socialkas](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/socialkas) <br>[oreos](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio1-2/oreos) <br>|
 | **episodio2:** |[bicacaro](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio2/bicacaro) <br>[arsenics](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio2/arsenics) <br>[darkeagle](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio2/darkeagle) <br>[julianjm](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio2/julianjm) <br>[asterixco](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio2/asterixco) <br>|
-| **episodio3:** |[bechma](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/bechma) <br>[bicacaro](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/bicacaro) <br>[arsenics](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/arsenics) <br>[darkeagle](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/darkeagle) <br>[julianjm](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/julianjm) <br>|
+| **episodio3:** |[bechma](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/bechma) <br>[bicacaro](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/bicacaro) <br>[arsenics](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/arsenics) <br>[DarkEagle](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/DarkEagle) <br>[julianjm](https://github.com/j0n3/unaalmes-writeups/tree/new-contribs-test/writeups/universomarvel/episodio3/julianjm) <br>|
 ## siliconvalley
 | Episode | Writeups |
 |---|---|
@@ -54,9 +54,9 @@ You can contact to UAM administrators by Telegram or email.
 # Contributors
 | # | Nickname | Contributions |
 |---|---|---:|
-| 1 | darkeagle | 15 |
-| 2 | j0n3 | 13 |
-| 3 | nachinho3 | 12 |
+| 1 | j0n3 | 13 |
+| 2 | nachinho3 | 12 |
+| 3 | darkeagle | 12 |
 | 4 | bicacaro | 11 |
 | 5 | rafamartos | 9 |
 | 6 | arsenics | 7 |
@@ -65,14 +65,15 @@ You can contact to UAM administrators by Telegram or email.
 | 9 | percu | 4 |
 | 10 | oreos | 4 |
 | 11 | victormanuelleyva | 4 |
-| 12 | socialkas | 2 |
-| 13 | cesarjz | 2 |
-| 14 | masi | 2 |
-| 15 | ramonsola | 1 |
-| 16 | rubenansotegui | 1 |
-| 17 | tonicastillo | 1 |
-| 18 | alejandroparras | 1 |
-| 19 | selankon | 1 |
-| 20 | blueudp | 1 |
-| 21 | asterixco | 1 |
-| 22 | bechma | 1 |
+| 12 | DarkEagle | 3 |
+| 13 | socialkas | 2 |
+| 14 | cesarjz | 2 |
+| 15 | masi | 2 |
+| 16 | ramonsola | 1 |
+| 17 | rubenansotegui | 1 |
+| 18 | tonicastillo | 1 |
+| 19 | alejandroparras | 1 |
+| 20 | selankon | 1 |
+| 21 | blueudp | 1 |
+| 22 | asterixco | 1 |
+| 23 | bechma | 1 |
