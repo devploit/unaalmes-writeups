@@ -41,7 +41,7 @@ def md_template_ranking(ranking):
 
 def md_template_contribs(contribs):
     writeups_dir = "writeups"
-    github_url_format = "https://github.com/sysdevploit/unaalmes-writeups/{}/{}"
+    github_url_format = "https://github.com/sysdevploit/unaalmes-writeups/blob/master/{}/{}"
     print("# Challenges")
     sorted_challenges = sorted(contribs, key=lambda x: x.name, reverse=True)
     for challenge in sorted_challenges:
