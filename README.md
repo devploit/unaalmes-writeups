@@ -55,7 +55,7 @@ You can contact to UAM administrators by Telegram or email.
 ## dragonball
 | Episode | Writeups |
 |---|---|
-| **episodio1:** |[j0n3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/j0n3) <br>[nachinho3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/nachinho3) <br>[julianjm](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/julianjm) <br>|
+| **episodio1:** |[bicacaro](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/bicacaro) <br>[j0n3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/j0n3) <br>[nachinho3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/nachinho3) <br>[julianjm](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/julianjm) <br>[M3n0s_D0n4ld](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/M3n0s_D0n4ld) <br>|
 | **episodio2:** |[j0n3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio2/j0n3) <br>|
 # Contributors
 | # | Nickname | Contributions |
@@ -63,7 +63,7 @@ You can contact to UAM administrators by Telegram or email.
 | 1 | j0n3 | 15 |
 | 2 | darkeagle | 15 |
 | 3 | nachinho3 | 13 |
-| 4 | bicacaro | 11 |
+| 4 | bicacaro | 12 |
 | 5 | rafamartos | 9 |
 | 6 | arsenics | 7 |
 | 7 | julianjm | 7 |
@@ -77,8 +77,9 @@ You can contact to UAM administrators by Telegram or email.
 | 15 | ramonsola | 1 |
 | 16 | rubenansotegui | 1 |
 | 17 | tonicastillo | 1 |
-| 18 | alejandroparras | 1 |
-| 19 | selankon | 1 |
-| 20 | blueudp | 1 |
-| 21 | asterixco | 1 |
-| 22 | bechma | 1 |
+| 18 | M3n0s_D0n4ld | 1 |
+| 19 | alejandroparras | 1 |
+| 20 | selankon | 1 |
+| 21 | blueudp | 1 |
+| 22 | asterixco | 1 |
+| 23 | bechma | 1 |
