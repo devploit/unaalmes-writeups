@@ -12,8 +12,7 @@ If you want to incorporate your own write-up send an email to: unaalmes@hispasec
 You can contact to UAM administrators by Telegram or email.
  - Telegram: https://t.me/joinchat/AKWAVkxjj1GTE_cvkvQvIQ
  - E-mail: unaalmes@hispasec.com
-
-# Challenges
+ # Challenges
 ## universomarvel
 | Episode | Writeups |
 |---|---|
@@ -57,13 +56,14 @@ You can contact to UAM administrators by Telegram or email.
 |---|---|
 | **episodio1:** |[bicacaro](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/bicacaro) <br>[j0n3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/j0n3) <br>[nachinho3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/nachinho3) <br>[julianjm](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/julianjm) <br>[M3n0s_D0n4ld](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio1/M3n0s_D0n4ld) <br>|
 | **episodio2:** |[j0n3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio2/j0n3) <br>|
+| **episodio3:** |[bicacaro](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio3/bicacaro) <br>[nachinho3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/dragonball/episodio3/nachinho3) <br>|
 # Contributors
 | # | Nickname | Contributions |
 |---|---|---:|
 | 1 | j0n3 | 15 |
 | 2 | darkeagle | 15 |
-| 3 | nachinho3 | 13 |
-| 4 | bicacaro | 12 |
+| 3 | nachinho3 | 14 |
+| 4 | bicacaro | 13 |
 | 5 | rafamartos | 9 |
 | 6 | arsenics | 7 |
 | 7 | julianjm | 7 |
