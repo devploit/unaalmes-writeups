@@ -20,6 +20,8 @@ jobs:
           run: python -c "import sys; print(sys.version)"
         - name: Update README
           run: |
-            python3 --version
             bash generate_readme.sh
-            cat README.md
+        - name: Commit new README.md
+          uses: zwaldowski/git-commit-action@v1
+          with:
+            commit_message: 'Update README'
