@@ -24,4 +24,7 @@ jobs:
         - name: Commit new README.md
           uses: zwaldowski/git-commit-action@v1
           with:
-            commit_message: 'Update README'
+            message: 'Update README'
+            add: "README.md"
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
