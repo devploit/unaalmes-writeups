@@ -47,6 +47,10 @@ You can contact to UAM administrators by Telegram or email.
 | **episodio1-2:** |[rafamartos](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio1-2/rafamartos) <br>[oreos](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio1-2/oreos) <br>[j0n3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio1-2/j0n3) <br>[bicacaro](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio1-2/bicacaro) <br>[darkeagle](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio1-2/darkeagle) <br>|
 | **episodio2:** |[rafamartos](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio2/rafamartos) <br>[j0n3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio2/j0n3) <br>[victormanuelleyva](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio2/victormanuelleyva) <br>[percu](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio2/percu) <br>[cesarjz](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio2/cesarjz) <br>[darkeagle](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio2/darkeagle) <br>|
 | **episodio3:** |[j0n3](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio3/j0n3) <br>[victormanuelleyva](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio3/victormanuelleyva) <br>[bicacaro](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio3/bicacaro) <br>[blueudp](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio3/blueudp) <br>[cesarjz](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio3/cesarjz) <br>[darkeagle](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/lacasadepapel/episodio3/darkeagle) <br>|
+## futurama
+| Episode | Writeups |
+|---|---|
+| **episodio3-1:** |[arsenics](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/futurama/episodio3-1/arsenics) <br>|
 ## extra
 | Episode | Writeups |
 |---|---|
@@ -65,8 +69,8 @@ You can contact to UAM administrators by Telegram or email.
 | 3 | nachinho3 | 14 |
 | 4 | bicacaro | 13 |
 | 5 | rafamartos | 9 |
-| 6 | julianjm | 8 |
-| 7 | arsenics | 7 |
+| 6 | arsenics | 8 |
+| 7 | julianjm | 8 |
 | 8 | 1v4n | 6 |
 | 9 | percu | 4 |
 | 10 | oreos | 4 |
