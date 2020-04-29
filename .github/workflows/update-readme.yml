@@ -21,10 +21,13 @@ jobs:
         - name: Update README
           run: |
             bash generate_readme.sh
-        - name: Commit new README.md
-          uses: zwaldowski/git-commit-action@v1
+        - name: Create commit and push
+          uses: github-actions-x/commit@v2.6
           with:
-            message: 'Update README'
-            add: "README.md"
-          env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            push-branch: master
+            commit-message: 'Update README.md'
+            files: README.md
+            rebase: 'true'
+            name: 'GH Action Bot'
+            email: jone79@gmail.com
