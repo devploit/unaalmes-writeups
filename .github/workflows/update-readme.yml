@@ -29,3 +29,5 @@ jobs:
             commit-message: 'Update README.md'
             files: README.md
             rebase: 'true'
+            name: 'GH Action Bot'
+            email: jone79@gmail.com
