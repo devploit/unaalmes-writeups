@@ -27,4 +27,4 @@ jobs:
             files: README.md
             rebase: 'true'
             name: 'GH Action Bot'
-            email: jone79@gmail.com
+            email: unaalmes@hispasec.com
