@@ -6,6 +6,7 @@ on:
 
 jobs:
     generate-readme:
+      if: github.repository == 'devploit/unaalmes-writeups'
       name: Generate README.md
       runs-on: ubuntu-latest
       steps:
