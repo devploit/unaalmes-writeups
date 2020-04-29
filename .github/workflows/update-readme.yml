@@ -16,11 +16,8 @@ jobs:
           with:
             python-version: '3.x'
             architecture: 'x64'
-        - name: Display Python version
-          run: python -c "import sys; print(sys.version)"
         - name: Update README
-          run: |
-            bash generate_readme.sh
+          run: bash generate_readme.sh
         - name: Create commit and push
           uses: github-actions-x/commit@v2.6
           with:
