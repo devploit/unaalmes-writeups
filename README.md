@@ -64,14 +64,14 @@ You can contact to UAM administrators by Telegram or email.
 ## breakingbad
 | Episode | Writeups |
 |---|---|
-| **episodio1:** |[masi](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/breakingbad/episodio1/masi) <br>|
+| **episodio1:** |[bicacaro](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/breakingbad/episodio1/bicacaro) <br>[masi](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/breakingbad/episodio1/masi) <br>|
 # Contributors
 | # | Nickname | Contributions |
 |---|---|---:|
 | 1 | darkeagle | 15 |
 | 2 | j0n3 | 15 |
-| 3 | nachinho3 | 14 |
-| 4 | bicacaro | 13 |
+| 3 | bicacaro | 14 |
+| 4 | nachinho3 | 14 |
 | 5 | rafamartos | 9 |
 | 6 | arsenics | 8 |
 | 7 | julianjm | 8 |
