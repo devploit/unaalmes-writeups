@@ -1,0 +1,75 @@
+Hola! Aquí va el writeup:
+
+1. En la pagina vemos que en el código html te sugieren 1234/1234 como
+password, pero al probarlo el resultado es negativo.
+
+2. Al analizar los documentos descargados vemos que se descarga un
+archivo login.js. Al analizar este archivo vemos que es la lógica de la
+comprobación de la password:
+
+var Password =
+"unescape%28String.fromCharCode%252880%252C%2520108%252C%252097%252C%2520110%2529%29:KZQWYZLOMNUWC===";
+
+3. Claramente vemos que se compone de dos partes:
+a) URL encoding
+unescape%28String.fromCharCode%252880%252C%2520108%252C%252097%252C%2520110%2529%29
+
+b) Base 32
+KZQWYZLOMNUWC===
+
+En el código javascript vemos que el delimitador es ":", por tanto lo
+que hay antes de los ":" puede ser el primer pin y lo segundo es el
+segundo pin.
+
+4. PRIMER PIN: buscamos un descrypter para url encoding, por ejemplo
+este: https://www.browserling.com/tools/url-decode. Al decodificar un
+par de veces vemos que el resultado es el siguiente:
+unescape(String.fromCharCode(80, 108, 97, 110))
+
+He comprobado la documentación de la función fromCharCode(),
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode
+, vemos que devuelve una string. Así que simplemente he ejecutado esa
+función (o en un jsfiddle o en un documento html, es lo mismo...):
+
+console.log(String.fromCharCode(80, 108, 97, 110))
+
+Y devuelve:
+Plan
+
+SEGUNDO PIN:
+$ echo "KZQWYZLOMNUWC===" | base32 -d
+Valencia
+
+5. Al poner los pins, recibimos la password del zip (captura de pantalla
+adjuntada)
+
+6. Descargamos el fichero, y lo ejecutamos con wine. Vemos un mensaje de
+error que nos indica que la fecha es errónea:
+System_Date: 05/20/18
+Wrong date R3m0!
+
+7. Deducimos que la fecha correcta está en el fichero, con formato
+mm/dd/yy .
+$ strings episodio1.exe | grep -E '[0-9][0-9]\/[0-9][0-9]\/[0-9][0-9]'
+01/23/89
+
+8. Cambiamos la fecha del sistema al día de 01/23/89. Será la fecha de
+aniversario de mr Rem0? Al ejecutar..:
+$ date
+lun ene 23 10:45:08 CET 1989
+
+$ wine episodio1.exe
+fixme:ntdll:find_reg_tz_info Can't find matching timezone information in
+the registry for bias -60, std (d/m/y): 24/09/1989, dlt (d/m/y): 26/03/1989
+
+Congratulation!!, Stealing Money $$$...
+----------------------------
+Stolen: 1.000.000.000 $
+----------------------------
+Flag: e30f35ad8d9cb6efc0778539a669fa85
+...........................................
+Pulse cualquier tecla para continuar...
+
+En la plataforma hay que poner el flag en formato:
+
+UAM{e30f35ad8d9cb6efc0778539a669fa85}

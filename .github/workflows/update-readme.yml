@@ -1,0 +1,31 @@
+name: Update readme and contributors
+on:
+    push:
+        branches:
+            - 'master'
+
+jobs:
+    generate-readme:
+      if: github.repository == 'devploit/unaalmes-writeups'
+      name: Generate README.md
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v2
+        - name: Setup python3
+          uses: actions/setup-python@v1
+          with:
+            python-version: '3.x'
+            architecture: 'x64'
+        - name: Update README
+          run: bash generate_readme.sh
+        - name: Create commit and push
+          uses: github-actions-x/commit@v2.6
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            push-branch: master
+            commit-message: 'Update README.md'
+            files: README.md
+            rebase: 'true'
+            name: 'GH Action Bot'
+            email: unaalmes@hispasec.com

