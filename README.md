@@ -65,7 +65,7 @@ You can contact to UAM administrators by Telegram or email.
 | Episode | Writeups |
 |---|---|
 | **episodio1:** |[masi](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/breakingbad/episodio1/masi) <br>[bicacaro](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/breakingbad/episodio1/bicacaro) <br>|
-| **episodio2:** |[masi](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/breakingbad/episodio2/masi) <br>|
+| **episodio2:** |[masi](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/breakingbad/episodio2/masi) <br>[arsenics](https://github.com/sysdevploit/unaalmes-writeups/tree/master/writeups/breakingbad/episodio2/arsenics) <br>|
 # Contributors
 | # | Nickname | Contributions |
 |---|---|---:|
@@ -73,9 +73,9 @@ You can contact to UAM administrators by Telegram or email.
 | 2 | j0n3 | 15 |
 | 3 | nachinho3 | 14 |
 | 4 | bicacaro | 14 |
-| 5 | rafamartos | 9 |
-| 6 | julianjm | 8 |
-| 7 | arsenics | 8 |
+| 5 | arsenics | 9 |
+| 6 | rafamartos | 9 |
+| 7 | julianjm | 8 |
 | 8 | 1v4n | 6 |
 | 9 | percu | 4 |
 | 10 | victormanuelleyva | 4 |
